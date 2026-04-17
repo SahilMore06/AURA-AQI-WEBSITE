@@ -1,7 +1,7 @@
 [build]
-  base    = "frontend"
+  base    = "."
   command = "npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 [build.environment]
   VITE_ML_API_URL = "https://aura-aqi-backend.onrender.com"
