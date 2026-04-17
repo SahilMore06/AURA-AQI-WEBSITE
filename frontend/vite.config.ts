@@ -9,6 +9,10 @@ export default defineConfig(({mode}) => {
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GOOGLE_AQ_API_KEY': JSON.stringify(env.GOOGLE_AQ_API_KEY || ""),
+      'process.env.VITE_ML_API_URL': JSON.stringify(env.VITE_ML_API_URL || ""),
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || ""),
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ""),
+      'process.env.VITE_GOOGLE_AQ_API_KEY': JSON.stringify(env.VITE_GOOGLE_AQ_API_KEY || ""),
     },
     resolve: {
       alias: {
