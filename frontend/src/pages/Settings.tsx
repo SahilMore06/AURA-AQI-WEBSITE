@@ -1,25 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Settings2, Bell, Shield, Moon, Sun, User, LogOut } from 'lucide-react';
+import { Settings2, Bell, Shield, Moon, Sun, User, LogOut, Save, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
 export function Settings() {
   const navigate = useNavigate();
-  const { session } = useAuthStore();
-  
+  const { session, profile, setProfile } = useAuthStore();
+
+  const [displayName, setDisplayName] = useState(
+    session?.user?.user_metadata?.display_name || ''
+  );
+  const [city, setCity] = useState('');
   const [threshold, setThreshold] = useState(100);
   const [theme, setTheme] = useState('dark');
   const [notifications, setNotifications] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Load existing profile from Supabase on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!session?.user?.id) return;
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      if (data) {
+        setDisplayName(data.display_name || '');
+        setCity(data.city || '');
+        setProfile(data);
+      }
+    };
+    loadProfile();
+  }, [session?.user?.id]);
+
+  const handleSaveProfile = async () => {
+    if (!session?.user?.id) return;
+    setSaving(true);
+    setSaved(false);
+    setSaveError(null);
+
+    try {
+      const updates = {
+        id: session.user.id,
+        display_name: displayName.trim(),
+        city: city.trim(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('user_profiles')
+        .upsert(updates, { onConflict: 'id' });
+
+      if (error) throw error;
+
+      // Update Auth metadata
+      await supabase.auth.updateUser({
+        data: { display_name: displayName.trim() },
+      });
+
+      // Update Zustand cache
+      setProfile({ ...profile, ...updates });
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      setSaveError(err.message || 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate('/auth');
   };
 
+  const userInitial = (
+    session?.user?.user_metadata?.display_name?.charAt(0) ||
+    session?.user?.email?.charAt(0) ||
+    'U'
+  ).toUpperCase();
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -20 }}
@@ -54,8 +122,8 @@ export function Settings() {
               <button
                 key={item.label}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                  item.active 
-                    ? 'bg-surface text-text-primary border border-stroke' 
+                  item.active
+                    ? 'bg-surface text-text-primary border border-stroke'
                     : 'text-muted hover:bg-stroke/50 hover:text-text-primary'
                 }`}
               >
@@ -63,9 +131,9 @@ export function Settings() {
                 {item.label}
               </button>
             ))}
-            
+
             <div className="pt-8 mt-8 border-t border-stroke">
-              <button 
+              <button
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#FF5252] hover:bg-[#FF5252]/10 transition-colors"
               >
@@ -85,15 +153,20 @@ export function Settings() {
             {/* Profile Section */}
             <section className="bg-surface backdrop-blur-xl border border-stroke rounded-3xl p-6">
               <h2 className="text-xl font-display italic mb-6">Profile Information</h2>
-              
+
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-20 h-20 rounded-full accent-gradient flex items-center justify-center text-3xl font-bold text-bg shadow-[0_0_30px_rgba(0,212,170,0.2)]">
-                  {session?.user?.user_metadata?.display_name?.charAt(0)?.toUpperCase() || 'U'}
+                  {userInitial}
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium">{session?.user?.user_metadata?.display_name || 'User'}</h3>
+                  <h3 className="text-lg font-medium">{displayName || 'User'}</h3>
                   <p className="text-muted text-sm">{session?.user?.email}</p>
-                  <button className="mt-2 text-sm text-[#00D4AA] hover:underline">Change Avatar</button>
+                  <p className="text-xs text-muted/60 mt-1">
+                    Member since{' '}
+                    {session?.user?.created_at
+                      ? new Date(session.user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+                      : '—'}
+                  </p>
                 </div>
               </div>
 
@@ -102,22 +175,59 @@ export function Settings() {
                   <label className="block text-sm font-medium text-muted mb-1">Display Name</label>
                   <input
                     type="text"
-                    defaultValue={session?.user?.user_metadata?.display_name || ''}
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
                     className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
+                    placeholder="Your display name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-1">Role</label>
+                  <label className="block text-sm font-medium text-muted mb-1">City</label>
                   <input
                     type="text"
-                    defaultValue="User"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
+                    placeholder="Your city"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-1">Email</label>
+                  <input
+                    type="text"
+                    value={session?.user?.email || ''}
                     disabled
                     className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-muted cursor-not-allowed"
                   />
-                  <p className="text-xs text-muted mt-1">Role is managed by your organization administrator.</p>
+                  <p className="text-xs text-muted mt-1">Email cannot be changed here.</p>
                 </div>
-                <button className="px-6 py-2 bg-[#00D4AA] text-bg font-medium rounded-xl hover:opacity-90 transition-opacity">
-                  Save Changes
+
+                {saveError && (
+                  <p className="text-sm text-red-400">{saveError}</p>
+                )}
+
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: saved ? '#00E676' : 'var(--color-accent, #00D4AA)', color: '#0d1117' }}
+                >
+                  {saving ? (
+                    <>
+                      <div className="w-4 h-4 rounded-full border-2 border-bg/30 border-t-bg animate-spin" />
+                      Saving…
+                    </>
+                  ) : saved ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Saved!
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </>
+                  )}
                 </button>
               </div>
             </section>
@@ -131,7 +241,7 @@ export function Settings() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted">Enable</span>
-                  <button 
+                  <button
                     onClick={() => setNotifications(!notifications)}
                     className={`w-12 h-6 rounded-full p-1 transition-colors ${notifications ? 'bg-[#00D4AA]' : 'bg-stroke'}`}
                   >
@@ -143,8 +253,8 @@ export function Settings() {
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <label className="text-sm font-medium text-muted">PM2.5 Threshold</label>
-                    <span className="text-[#00D4AA] font-bold">{threshold} µg/m³</span>
+                    <label className="text-sm font-medium text-muted">AQI Alert Threshold</label>
+                    <span className="text-[#00D4AA] font-bold">AQI {threshold}</span>
                   </div>
                   <input
                     type="range"
@@ -159,12 +269,18 @@ export function Settings() {
                     <span>Hazardous (300)</span>
                   </div>
                 </div>
-                
+
                 <div className="bg-bg border border-stroke rounded-xl p-4 flex items-start gap-3">
                   <Bell className="w-5 h-5 text-[#FF9E40] shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-text-primary">Current Alert Level: Unhealthy</h4>
-                    <p className="text-xs text-muted mt-1">You will receive push notifications when PM2.5 exceeds {threshold} µg/m³ in your tracked cities.</p>
+                    <h4 className="text-sm font-medium text-text-primary">Alert configured</h4>
+                    <p className="text-xs text-muted mt-1">
+                      You will receive alerts when AQI exceeds {threshold} — currently set to{' '}
+                      <span className="text-[#00D4AA]">
+                        {threshold <= 50 ? 'Good' : threshold <= 100 ? 'Moderate' : threshold <= 150 ? 'Unhealthy for Sensitive' : 'Unhealthy'}
+                      </span>
+                      .
+                    </p>
                   </div>
                 </div>
               </div>
@@ -173,7 +289,6 @@ export function Settings() {
             {/* Appearance */}
             <section className="bg-surface backdrop-blur-xl border border-stroke rounded-3xl p-6">
               <h2 className="text-xl font-display italic mb-6">Appearance</h2>
-              
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setTheme('light')}

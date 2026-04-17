@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Bell, MapPin, RefreshCw, Info, Wind, Droplets, ThermometerSun, Loader2, Shield, Activity, Leaf, CheckCircle, Flame, Factory, Car, AlertTriangle, ShieldAlert, Skull, Sparkles, Navigation } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList, Cell } from 'recharts';
 import { generateDashboardIEEE } from '../utils/ieeeDashboardReport';
+import { supabase } from '../lib/supabase';
+import { useAuthStore } from '../store/authStore';
 
 export function Dashboard() {
+  const { session } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<any>(null);
   const [locationName, setLocationName] = useState('Detecting location…');
+  const locationNameRef = useRef('Detecting location…');
   const [trendMetric, setTrendMetric] = useState('pm25');
   const [mlCities, setMlCities] = useState<any>(null);
   const [alertActive, setAlertActive] = useState(false);
@@ -17,10 +21,41 @@ export function Dashboard() {
   const [lastUpdated, setLastUpdated] = useState<string>('just now');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [geoStatus, setGeoStatus] = useState<'detecting' | 'active' | 'denied' | 'unavailable'>('detecting');
-  const [nextRefreshIn, setNextRefreshIn] = useState(120); // seconds until next auto-refresh
+  const [nextRefreshIn, setNextRefreshIn] = useState(120);
 
   const GOOGLE_AQ_KEY = (import.meta as any).env?.VITE_GOOGLE_AQ_API_KEY || 'AIzaSyBBAX3ZdYpT5YJWxal0wMYifOJOV7OuMso';
   const ML_API_URL = (import.meta as any).env?.VITE_ML_API_URL || 'http://localhost:5001';
+
+  // ── Save AQI reading to Supabase ──────────────────────────────────────────
+  const saveAqiReading = async (
+    lat: number,
+    lon: number,
+    aqiData: any,
+    aqiCategory: string,
+    cityName: string
+  ) => {
+    if (!session?.user?.id) return; // Not logged in — skip
+    try {
+      await supabase.from('aqi_readings').insert({
+        user_id: session.user.id,
+        latitude: lat,
+        longitude: lon,
+        city: cityName || 'Unknown',
+        aqi: aqiData.us_aqi || 0,
+        aqi_category: aqiCategory,
+        pm25: aqiData.pm2_5 || null,
+        pm10: aqiData.pm10 || null,
+        ozone: aqiData.ozone || null,
+        no2: aqiData.nitrogen_dioxide || null,
+        so2: aqiData.sulphur_dioxide || null,
+        co: aqiData.carbon_monoxide || null,
+        data_source: 'Google Air Quality API',
+        captured_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn('AQI reading save failed (non-critical):', e);
+    }
+  };
 
   const fetchData = async (lat: number, lon: number) => {
     setCoords({ lat, lon });
@@ -104,19 +139,36 @@ export function Dashboard() {
       });
 
       // ── Reverse geocode for location name ──
+      let resolvedCity = '';
       try {
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
         const geoJson = await geoRes.json();
         if (geoJson.address) {
           const city = geoJson.address.city || geoJson.address.town || geoJson.address.village || geoJson.address.county || '';
           const state = geoJson.address.state || '';
+          resolvedCity = city;
           if (city || state) {
-            setLocationName(`${city}${city && state ? ', ' : ''}${state}`);
+            const name = `${city}${city && state ? ', ' : ''}${state}`;
+            setLocationName(name);
+            locationNameRef.current = name;
           }
         }
       } catch (e) {
         console.error('Reverse geocoding failed', e);
       }
+
+      // ── Save reading to Supabase (fire-and-forget) ──
+      const currentAqi = {
+        us_aqi: mainAqi,
+        pm2_5: pollutantMap.pm2_5 || 0,
+        pm10: pollutantMap.pm10 || 0,
+        ozone: pollutantMap.ozone || 0,
+        nitrogen_dioxide: pollutantMap.nitrogen_dioxide || 0,
+        sulphur_dioxide: pollutantMap.sulphur_dioxide || 0,
+        carbon_monoxide: pollutantMap.carbon_monoxide || 0,
+      };
+      const aqiLbl = mainAqi <= 50 ? 'Good' : mainAqi <= 100 ? 'Moderate' : mainAqi <= 150 ? 'Unhealthy for Sensitive' : mainAqi <= 200 ? 'Unhealthy' : mainAqi <= 300 ? 'Very Unhealthy' : 'Hazardous';
+      saveAqiReading(lat, lon, currentAqi, aqiLbl, resolvedCity);
       
     } catch (err) {
       setError('Failed to fetch air quality data');
@@ -407,8 +459,8 @@ export function Dashboard() {
               <Bell className={`w-5 h-5 ${alertActive ? 'text-[#FF5252]' : 'text-muted'}`} />
               {alertActive && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF5252]" />}
             </button>
-            <div className="w-10 h-10 rounded-full bg-[#00D4AA] flex items-center justify-center font-bold text-bg">
-              A
+            <div className="w-10 h-10 rounded-full accent-gradient flex items-center justify-center font-bold text-bg text-sm shadow-[0_0_15px_rgba(0,212,170,0.3)]" title={session?.user?.email || 'User'}>
+              {(session?.user?.user_metadata?.display_name?.charAt(0) || session?.user?.email?.charAt(0) || 'A').toUpperCase()}
             </div>
           </div>
         </motion.header>

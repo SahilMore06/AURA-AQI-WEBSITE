@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   session: null,
   profile: null,
   isLoading: true,
-  isAdminMock: true,
+  isAdminMock: false, // ← FIXED: was incorrectly true, letting anyone bypass auth
   setUser: (user) => set({ user }),
   setSession: (session) => set({ session }),
   setProfile: (profile) => set({ profile }),
