@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Download, Calendar, Activity, BarChart3, MapPin, Loader2, Radio, Search, X, Plus, Trash2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList, ReferenceLine, Cell } from 'recharts';
 import { AuraLogo } from '../components/AuraLogo';
+import { logEvent } from '../services/activityLogger';
 
 const DEFAULT_CITIES = [
   { id: 'mumbai',    name: 'Mumbai',    lat: 19.0760, lon: 72.8777, color: '#00D4AA', isDefault: true },
@@ -34,6 +35,9 @@ export function Analytics() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [nextRefreshIn, setNextRefreshIn] = useState(300);
+
+  // Log page view on mount
+  useEffect(() => { logEvent('analytics_view', {}, '/analytics'); }, []);
 
   const toggleCity = (cityId: string) => {
     setActiveCities(prev =>
@@ -95,6 +99,7 @@ export function Analytics() {
     a.download = `aura_analytics_${range}_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    logEvent('analytics_export', { range, cities: activeCities }, '/analytics');
   };
 
   useEffect(() => {

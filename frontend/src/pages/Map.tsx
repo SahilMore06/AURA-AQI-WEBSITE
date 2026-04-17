@@ -4,6 +4,7 @@ import { Search, Filter, MapPin, Loader2, Navigation, X, ChevronDown, AlertTrian
 import { MapContainer, TileLayer, Marker, useMapEvents, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { logEvent } from '../services/activityLogger';
 
 // Fix Leaflet's default icon path issues
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -814,6 +815,9 @@ export function MapView() {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const [showHeatmap, setShowHeatmap] = useState(true);
+
+  // Log page view on mount
+  useEffect(() => { logEvent('map_view', {}, '/map'); }, []);
   const [aiAdvisory, setAiAdvisory] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [showAiPanel, setShowAiPanel] = useState(false);

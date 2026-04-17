@@ -4,6 +4,7 @@ import { Settings2, Bell, User, LogOut, Save, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+import { logEvent } from '../services/activityLogger';
 
 const ALERT_KEY = 'aura-alert';
 
@@ -34,6 +35,7 @@ export function Settings() {
   // Save alert prefs to localStorage whenever they change
   const handleSaveAlert = () => {
     localStorage.setItem(ALERT_KEY, JSON.stringify({ enabled: alertEnabled, threshold }));
+    logEvent('alert_save', { enabled: alertEnabled, threshold }, '/settings');
     setAlertSaved(true);
     setTimeout(() => setAlertSaved(false), 2500);
   };
@@ -74,6 +76,7 @@ export function Settings() {
       if (error) throw error;
       await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
       setProfile({ ...profile, ...updates });
+      logEvent('profile_save', { display_name: displayName.trim(), city: city.trim() }, '/settings');
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {
@@ -84,6 +87,7 @@ export function Settings() {
   };
 
   const handleSignOut = async () => {
+    logEvent('sign_out', {}, '/settings');
     await supabase.auth.signOut();
     navigate('/auth');
   };

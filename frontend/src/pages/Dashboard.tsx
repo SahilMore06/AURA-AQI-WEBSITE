@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList, C
 import { generateDashboardIEEE } from '../utils/ieeeDashboardReport';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { logEvent } from '../services/activityLogger';
 
 export function Dashboard() {
   const { session } = useAuthStore();
@@ -55,6 +56,11 @@ export function Dashboard() {
     } catch (e) {
       console.warn('AQI reading save failed (non-critical):', e);
     }
+  };
+
+  // Log AQI fetch to activity_log
+  const logAqiFetch = (aqiValue: number, city: string, lat: number, lon: number) => {
+    logEvent('aqi_fetch', { aqi: aqiValue, city, lat, lon }, '/dashboard');
   };
 
   const fetchData = async (lat: number, lon: number) => {
@@ -169,6 +175,7 @@ export function Dashboard() {
       };
       const aqiLbl = mainAqi <= 50 ? 'Good' : mainAqi <= 100 ? 'Moderate' : mainAqi <= 150 ? 'Unhealthy for Sensitive' : mainAqi <= 200 ? 'Unhealthy' : mainAqi <= 300 ? 'Very Unhealthy' : 'Hazardous';
       saveAqiReading(lat, lon, currentAqi, aqiLbl, resolvedCity);
+      logAqiFetch(mainAqi, resolvedCity, lat, lon);
       
     } catch (err) {
       setError('Failed to fetch air quality data');
@@ -184,6 +191,7 @@ export function Dashboard() {
   const handleManualRefresh = () => {
     if (coords) {
       setIsRefreshing(true);
+      logEvent('aqi_refresh', { coords }, '/dashboard');
       fetchData(coords.lat, coords.lon);
     }
   };

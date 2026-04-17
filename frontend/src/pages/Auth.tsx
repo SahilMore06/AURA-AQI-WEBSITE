@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Github, AlertCircle, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { logEvent } from '../services/activityLogger';
 
 export function Auth() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -80,6 +81,7 @@ export function Auth() {
           setSession(data.session);
           setUser(data.session.user);
           setLoading(false);
+          logEvent('sign_in', { method: 'email' }, '/auth');
           navigate('/dashboard');
         }
 
@@ -123,6 +125,7 @@ export function Auth() {
             updated_at: new Date().toISOString(),
           }, { onConflict: 'id' });
 
+          logEvent('sign_up', { method: 'email', display_name: displayName.trim() }, '/auth');
           navigate('/registration');
         } else {
           // Email confirmation is enabled — user must verify email first

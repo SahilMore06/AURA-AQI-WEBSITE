@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+import { logEvent } from '../services/activityLogger';
 import { User, MapPin, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 
 export function Registration() {
@@ -122,6 +123,7 @@ export function Registration() {
       }
 
       setProfile(profile);
+      logEvent('registration_complete', { city: city.trim(), display_name: profile.display_name }, '/registration');
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to save profile. Please try again.');
