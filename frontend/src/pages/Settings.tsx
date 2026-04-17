@@ -1,30 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Settings2, Bell, Shield, Moon, Sun, User, LogOut, Save, CheckCircle } from 'lucide-react';
+import { Settings2, Bell, Moon, Sun, User, LogOut, Save, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+
+// ── Persist theme preference across sessions ──────────────────────────────────
+const THEME_KEY = 'aura-theme';
+const ALERT_KEY = 'aura-alert';
+
+function applyTheme(theme: string) {
+  document.documentElement.classList.toggle('light', theme === 'light');
+}
 
 export function Settings() {
   const navigate = useNavigate();
   const { session, profile, setProfile } = useAuthStore();
 
+  // Profile state
   const [displayName, setDisplayName] = useState(
     session?.user?.user_metadata?.display_name || ''
   );
   const [city, setCity] = useState('');
-  const [threshold, setThreshold] = useState(100);
-  const [theme, setTheme] = useState('dark');
-  const [notifications, setNotifications] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Load existing profile from Supabase on mount
+  // Alert state — persisted to localStorage
+  const [alertEnabled, setAlertEnabled] = useState<boolean>(() => {
+    const stored = localStorage.getItem(ALERT_KEY);
+    return stored ? JSON.parse(stored).enabled : true;
+  });
+  const [threshold, setThreshold] = useState<number>(() => {
+    const stored = localStorage.getItem(ALERT_KEY);
+    return stored ? JSON.parse(stored).threshold : 100;
+  });
+  const [alertSaved, setAlertSaved] = useState(false);
+
+  // Theme state — persisted to localStorage and applied immediately
+  const [theme, setThemeState] = useState<string>(() => {
+    return localStorage.getItem(THEME_KEY) || 'dark';
+  });
+
+  // Apply theme on mount
+  useEffect(() => {
+    applyTheme(theme);
+  }, []);
+
+  const handleThemeChange = useCallback((newTheme: string) => {
+    setThemeState(newTheme);
+    localStorage.setItem(THEME_KEY, newTheme);
+    applyTheme(newTheme);
+  }, []);
+
+  // Save alert prefs to localStorage whenever they change
+  const handleSaveAlert = () => {
+    localStorage.setItem(ALERT_KEY, JSON.stringify({ enabled: alertEnabled, threshold }));
+    setAlertSaved(true);
+    setTimeout(() => setAlertSaved(false), 2500);
+  };
+
+  // Load profile from Supabase on mount
   useEffect(() => {
     const loadProfile = async () => {
       if (!session?.user?.id) return;
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', session.user.id)
@@ -43,7 +83,6 @@ export function Settings() {
     setSaving(true);
     setSaved(false);
     setSaveError(null);
-
     try {
       const updates = {
         id: session.user.id,
@@ -51,21 +90,12 @@ export function Settings() {
         city: city.trim(),
         updated_at: new Date().toISOString(),
       };
-
       const { error } = await supabase
         .from('user_profiles')
         .upsert(updates, { onConflict: 'id' });
-
       if (error) throw error;
-
-      // Update Auth metadata
-      await supabase.auth.updateUser({
-        data: { display_name: displayName.trim() },
-      });
-
-      // Update Zustand cache
+      await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
       setProfile({ ...profile, ...updates });
-
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {
@@ -77,6 +107,9 @@ export function Settings() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    // Reset theme to dark on sign-out
+    applyTheme('dark');
+    localStorage.removeItem(THEME_KEY);
     navigate('/auth');
   };
 
@@ -85,6 +118,20 @@ export function Settings() {
     session?.user?.email?.charAt(0) ||
     'U'
   ).toUpperCase();
+
+  const aqiLabel =
+    threshold <= 50 ? 'Good' :
+    threshold <= 100 ? 'Moderate' :
+    threshold <= 150 ? 'Unhealthy for Sensitive Groups' :
+    threshold <= 200 ? 'Unhealthy' :
+    threshold <= 300 ? 'Very Unhealthy' : 'Hazardous';
+
+  const aqiColor =
+    threshold <= 50 ? '#00E676' :
+    threshold <= 100 ? '#FFD740' :
+    threshold <= 150 ? '#FF9E40' :
+    threshold <= 200 ? '#FF5252' :
+    threshold <= 300 ? '#B94FE8' : '#B94F4F';
 
   return (
     <motion.div
@@ -106,7 +153,7 @@ export function Settings() {
         </motion.header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Sidebar Nav */}
+          {/* Sidebar */}
           <motion.nav
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -114,25 +161,19 @@ export function Settings() {
             className="md:col-span-1 space-y-2"
           >
             {[
-              { icon: User, label: 'Profile', active: true },
-              { icon: Bell, label: 'Notifications', active: false },
-              { icon: Shield, label: 'Security & Privacy', active: false },
-              { icon: Moon, label: 'Appearance', active: false },
+              { icon: User, label: 'Profile' },
+              { icon: Bell, label: 'Alerts' },
+              { icon: theme === 'light' ? Sun : Moon, label: 'Appearance' },
             ].map((item) => (
-              <button
+              <div
                 key={item.label}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                  item.active
-                    ? 'bg-surface text-text-primary border border-stroke'
-                    : 'text-muted hover:bg-stroke/50 hover:text-text-primary'
-                }`}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted"
               >
-                <item.icon className={`w-4 h-4 ${item.active ? 'text-[#00D4AA]' : ''}`} />
+                <item.icon className="w-4 h-4" />
                 {item.label}
-              </button>
+              </div>
             ))}
-
-            <div className="pt-8 mt-8 border-t border-stroke">
+            <div className="pt-6 mt-6 border-t border-stroke">
               <button
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#FF5252] hover:bg-[#FF5252]/10 transition-colors"
@@ -143,25 +184,24 @@ export function Settings() {
             </div>
           </motion.nav>
 
-          {/* Main Content Area */}
+          {/* Main panels */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="md:col-span-2 space-y-6"
           >
-            {/* Profile Section */}
-            <section className="bg-surface backdrop-blur-xl border border-stroke rounded-3xl p-6">
+            {/* ── Profile ── */}
+            <section className="bg-surface border border-stroke rounded-3xl p-6">
               <h2 className="text-xl font-display italic mb-6">Profile Information</h2>
-
-              <div className="flex items-center gap-6 mb-8">
-                <div className="w-20 h-20 rounded-full accent-gradient flex items-center justify-center text-3xl font-bold text-bg shadow-[0_0_30px_rgba(0,212,170,0.2)]">
+              <div className="flex items-center gap-5 mb-6">
+                <div className="w-16 h-16 rounded-full accent-gradient flex items-center justify-center text-2xl font-bold text-bg shadow-[0_0_20px_rgba(0,212,170,0.2)]">
                   {userInitial}
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium">{displayName || 'User'}</h3>
+                  <p className="font-medium">{displayName || 'User'}</p>
                   <p className="text-muted text-sm">{session?.user?.email}</p>
-                  <p className="text-xs text-muted/60 mt-1">
+                  <p className="text-xs text-muted/60 mt-0.5">
                     Member since{' '}
                     {session?.user?.created_at
                       ? new Date(session.user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
@@ -170,143 +210,169 @@ export function Settings() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-1">Display Name</label>
+                  <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1">Display Name</label>
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
+                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
                     placeholder="Your display name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-1">City</label>
+                  <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1">City</label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
+                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:border-[#00D4AA] transition-colors"
                     placeholder="Your city"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-1">Email</label>
+                  <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1">Email</label>
                   <input
                     type="text"
                     value={session?.user?.email || ''}
                     disabled
-                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2 text-muted cursor-not-allowed"
+                    className="w-full bg-bg border border-stroke rounded-xl px-4 py-2.5 text-sm text-muted cursor-not-allowed"
                   />
-                  <p className="text-xs text-muted mt-1">Email cannot be changed here.</p>
                 </div>
-
-                {saveError && (
-                  <p className="text-sm text-red-400">{saveError}</p>
-                )}
-
+                {saveError && <p className="text-sm text-red-400">{saveError}</p>}
                 <button
                   onClick={handleSaveProfile}
                   disabled={saving}
-                  className="flex items-center gap-2 px-6 py-2 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: saved ? '#00E676' : 'var(--color-accent, #00D4AA)', color: '#0d1117' }}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50"
+                  style={{ background: saved ? '#00E676' : '#00D4AA', color: '#0d1117' }}
                 >
                   {saving ? (
-                    <>
-                      <div className="w-4 h-4 rounded-full border-2 border-bg/30 border-t-bg animate-spin" />
-                      Saving…
-                    </>
+                    <><div className="w-3.5 h-3.5 rounded-full border-2 border-bg/30 border-t-bg animate-spin" />Saving…</>
                   ) : saved ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      Saved!
-                    </>
+                    <><CheckCircle className="w-3.5 h-3.5" />Saved!</>
                   ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      Save Changes
-                    </>
+                    <><Save className="w-3.5 h-3.5" />Save Changes</>
                   )}
                 </button>
               </div>
             </section>
 
-            {/* Alert Thresholds */}
-            <section className="bg-surface backdrop-blur-xl border border-stroke rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-6">
+            {/* ── Alert Thresholds ── */}
+            <section className="bg-surface border border-stroke rounded-3xl p-6">
+              <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-display italic">Alert Thresholds</h2>
                   <p className="text-muted text-sm mt-1">Configure when you receive AQI alerts.</p>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* Enable toggle */}
+                <div className="flex items-center gap-2 shrink-0">
                   <span className="text-sm text-muted">Enable</span>
                   <button
-                    onClick={() => setNotifications(!notifications)}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${notifications ? 'bg-[#00D4AA]' : 'bg-stroke'}`}
+                    onClick={() => setAlertEnabled(!alertEnabled)}
+                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${alertEnabled ? 'bg-[#00D4AA]' : 'bg-stroke'}`}
                   >
-                    <div className={`w-4 h-4 bg-bg rounded-full transition-transform ${notifications ? 'translate-x-6' : 'translate-x-0'}`} />
+                    <div className={`w-4 h-4 bg-bg rounded-full shadow transition-transform duration-200 ${alertEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className={`space-y-5 transition-opacity duration-200 ${alertEnabled ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                {/* Slider */}
                 <div>
-                  <div className="flex justify-between mb-2">
+                  <div className="flex justify-between mb-3">
                     <label className="text-sm font-medium text-muted">AQI Alert Threshold</label>
-                    <span className="text-[#00D4AA] font-bold">AQI {threshold}</span>
+                    <span className="font-bold text-sm" style={{ color: aqiColor }}>AQI {threshold}</span>
                   </div>
                   <input
                     type="range"
-                    min="0"
-                    max="300"
+                    min="0" max="300" step="5"
                     value={threshold}
                     onChange={(e) => setThreshold(Number(e.target.value))}
-                    className="w-full accent-[#00D4AA] bg-stroke rounded-lg appearance-none h-2"
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                    style={{ accentColor: aqiColor }}
                   />
                   <div className="flex justify-between text-xs text-muted mt-2">
                     <span>Good (0)</span>
+                    <span>Moderate (100)</span>
                     <span>Hazardous (300)</span>
                   </div>
                 </div>
 
-                <div className="bg-bg border border-stroke rounded-xl p-4 flex items-start gap-3">
-                  <Bell className="w-5 h-5 text-[#FF9E40] shrink-0 mt-0.5" />
+                {/* Info card */}
+                <div className="rounded-xl p-4 flex items-start gap-3 border" style={{ borderColor: aqiColor + '30', background: aqiColor + '10' }}>
+                  <Bell className="w-5 h-5 shrink-0 mt-0.5" style={{ color: aqiColor }} />
                   <div>
-                    <h4 className="text-sm font-medium text-text-primary">Alert configured</h4>
-                    <p className="text-xs text-muted mt-1">
-                      You will receive alerts when AQI exceeds {threshold} — currently set to{' '}
-                      <span className="text-[#00D4AA]">
-                        {threshold <= 50 ? 'Good' : threshold <= 100 ? 'Moderate' : threshold <= 150 ? 'Unhealthy for Sensitive' : 'Unhealthy'}
-                      </span>
-                      .
+                    <h4 className="text-sm font-semibold text-text-primary">Alert configured</h4>
+                    <p className="text-xs text-muted mt-0.5">
+                      You will receive alerts when AQI exceeds{' '}
+                      <span className="font-bold" style={{ color: aqiColor }}>{threshold}</span>
+                      {' '}— currently the{' '}
+                      <span className="font-bold" style={{ color: aqiColor }}>{aqiLabel}</span>
+                      {' '}range.
                     </p>
                   </div>
                 </div>
+
+                {/* Save alerts button */}
+                <button
+                  onClick={handleSaveAlert}
+                  className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium transition-all"
+                  style={{ background: alertSaved ? '#00E676' : '#00D4AA', color: '#0d1117' }}
+                >
+                  {alertSaved ? (
+                    <><CheckCircle className="w-3.5 h-3.5" />Saved!</>
+                  ) : (
+                    <><Save className="w-3.5 h-3.5" />Save Alert Settings</>
+                  )}
+                </button>
               </div>
+
+              {!alertEnabled && (
+                <p className="text-xs text-muted mt-4 italic">Alerts are disabled — enable the toggle to configure.</p>
+              )}
             </section>
 
-            {/* Appearance */}
-            <section className="bg-surface backdrop-blur-xl border border-stroke rounded-3xl p-6">
-              <h2 className="text-xl font-display italic mb-6">Appearance</h2>
+            {/* ── Appearance ── */}
+            <section className="bg-surface border border-stroke rounded-3xl p-6">
+              <h2 className="text-xl font-display italic mb-2">Appearance</h2>
+              <p className="text-muted text-sm mb-5">Choose your preferred colour scheme. Changes apply instantly.</p>
+
               <div className="grid grid-cols-2 gap-4">
                 <button
-                  onClick={() => setTheme('light')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all ${
-                    theme === 'light' ? 'border-[#00D4AA] bg-stroke/50' : 'border-stroke hover:border-muted'
+                  onClick={() => handleThemeChange('light')}
+                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all duration-200 ${
+                    theme === 'light'
+                      ? 'border-[#00D4AA] bg-[#00D4AA]/10 scale-[1.02]'
+                      : 'border-stroke hover:border-muted'
                   }`}
                 >
-                  <Sun className={`w-8 h-8 ${theme === 'light' ? 'text-[#00D4AA]' : 'text-muted'}`} />
-                  <span className={`font-medium ${theme === 'light' ? 'text-text-primary' : 'text-muted'}`}>Light Mode</span>
+                  <Sun className={`w-8 h-8 transition-colors ${theme === 'light' ? 'text-[#00D4AA]' : 'text-muted'}`} />
+                  <div className="text-center">
+                    <p className={`font-semibold ${theme === 'light' ? 'text-text-primary' : 'text-muted'}`}>Light Mode</p>
+                    <p className="text-xs text-muted mt-0.5">Bright & clean</p>
+                  </div>
+                  {theme === 'light' && (
+                    <div className="w-2 h-2 rounded-full bg-[#00D4AA]" />
+                  )}
                 </button>
+
                 <button
-                  onClick={() => setTheme('dark')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all ${
-                    theme === 'dark' ? 'border-[#00D4AA] bg-stroke/50' : 'border-stroke hover:border-muted'
+                  onClick={() => handleThemeChange('dark')}
+                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all duration-200 ${
+                    theme === 'dark'
+                      ? 'border-[#00D4AA] bg-[#00D4AA]/10 scale-[1.02]'
+                      : 'border-stroke hover:border-muted'
                   }`}
                 >
-                  <Moon className={`w-8 h-8 ${theme === 'dark' ? 'text-[#00D4AA]' : 'text-muted'}`} />
-                  <span className={`font-medium ${theme === 'dark' ? 'text-text-primary' : 'text-muted'}`}>Dark Mode</span>
+                  <Moon className={`w-8 h-8 transition-colors ${theme === 'dark' ? 'text-[#00D4AA]' : 'text-muted'}`} />
+                  <div className="text-center">
+                    <p className={`font-semibold ${theme === 'dark' ? 'text-text-primary' : 'text-muted'}`}>Dark Mode</p>
+                    <p className="text-xs text-muted mt-0.5">Easy on the eyes</p>
+                  </div>
+                  {theme === 'dark' && (
+                    <div className="w-2 h-2 rounded-full bg-[#00D4AA]" />
+                  )}
                 </button>
               </div>
             </section>

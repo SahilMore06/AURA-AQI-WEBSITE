@@ -77,9 +77,27 @@
   --ring: oklch(1 0 0 / 0.2);
 }
 
+/* ── Light theme overrides ─────────────────────────────────────────── */
+.light {
+  --bg: 0 0% 97%;
+  --surface: 0 0% 100%;
+  --text: 0 0% 8%;
+  --muted: 0 0% 40%;
+  --stroke: 0 0% 86%;
+  --accent: 0 0% 8%;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(0.97 0 0);
+  --card-foreground: oklch(0 0 0);
+  --border: oklch(0.85 0 0);
+  --input: oklch(0.85 0 0);
+}
+
 @layer base {
   body {
     @apply font-body antialiased bg-bg text-text-primary;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
