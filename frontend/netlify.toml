@@ -3,6 +3,9 @@
   command = "npm run build"
   publish = "frontend/dist"
 
+[build.environment]
+  VITE_ML_API_URL = "https://aura-aqi-backend.onrender.com"
+
 # SPA redirect — all routes serve index.html for client-side routing
 [[redirects]]
   from   = "/*"
