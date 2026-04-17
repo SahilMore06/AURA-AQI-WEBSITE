@@ -1,0 +1,28 @@
+{
+  "features": [
+    "CO AQI Value",
+    "Ozone AQI Value",
+    "NO2 AQI Value",
+    "PM2.5 AQI Value",
+    "PM10 AQI Value",
+    "SO2 AQI Value"
+  ],
+  "classes": [
+    "Good",
+    "Hazardous",
+    "Moderate",
+    "Unhealthy",
+    "Unhealthy for Sensitive Groups",
+    "Very Unhealthy"
+  ],
+  "accuracy": 0.9522,
+  "n_estimators": 200,
+  "feature_importances": {
+    "CO AQI Value": 0.147,
+    "Ozone AQI Value": 0.0799,
+    "NO2 AQI Value": 0.078,
+    "PM2.5 AQI Value": 0.3994,
+    "PM10 AQI Value": 0.2197,
+    "SO2 AQI Value": 0.076
+  }
+}

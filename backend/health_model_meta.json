@@ -1,0 +1,3365 @@
+{
+  "features": [
+    "CO AQI Value",
+    "Ozone AQI Value",
+    "NO2 AQI Value",
+    "PM2.5 AQI Value",
+    "PM10 AQI Value",
+    "SO2 AQI Value"
+  ],
+  "health_classes": [
+    "Best",
+    "Hazardous",
+    "Healthy",
+    "Moderate",
+    "Unhealthy",
+    "Very Unhealthy"
+  ],
+  "pollutant_classes": [
+    "CO",
+    "NO2",
+    "Ozone",
+    "PM2.5"
+  ],
+  "health_accuracy": 0.9346,
+  "pollutant_accuracy": 0.9996,
+  "dataset_rows": 48000,
+  "cities": 60,
+  "continents": [
+    "Africa",
+    "Asia",
+    "Europe",
+    "North America",
+    "Oceania",
+    "South America"
+  ],
+  "category_distribution": {
+    "Good": 16231,
+    "Moderate": 9722,
+    "Unhealthy for Sensitive Groups": 7091,
+    "Unhealthy": 5596,
+    "Very Unhealthy": 5572,
+    "Hazardous": 3788
+  },
+  "quality_distribution": {
+    "Good": 9722,
+    "Best": 8277,
+    "Better": 7954,
+    "Moderate": 7091,
+    "Bad": 5596,
+    "Worse": 5572,
+    "Worst": 3788
+  },
+  "city_rankings": [
+    {
+      "city": "Queenstown",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "latitude": -45.0312,
+      "longitude": 168.6626,
+      "population_millions": 0.05,
+      "avg_aqi": 15,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 1.4,
+        "Ozone": 13.0,
+        "NO2": 2.5,
+        "PM2.5": 5.6,
+        "PM10": 3.2,
+        "SO2": 0.5
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Hobart",
+      "country": "Australia",
+      "continent": "Oceania",
+      "latitude": -42.8821,
+      "longitude": 147.3272,
+      "population_millions": 0.2,
+      "avg_aqi": 17,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 1.7,
+        "Ozone": 14.5,
+        "NO2": 3.0,
+        "PM2.5": 6.5,
+        "PM10": 3.7,
+        "SO2": 0.6
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Reykjavik",
+      "country": "Iceland",
+      "continent": "Europe",
+      "latitude": 64.1466,
+      "longitude": -21.9426,
+      "population_millions": 0.1,
+      "avg_aqi": 17,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.2,
+        "Ozone": 3.8,
+        "NO2": 14.4,
+        "PM2.5": 5.5,
+        "PM10": 3.1,
+        "SO2": 0.5
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Wellington",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "latitude": -41.2865,
+      "longitude": 174.7762,
+      "population_millions": 0.4,
+      "avg_aqi": 18,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 1.8,
+        "Ozone": 15.7,
+        "NO2": 3.2,
+        "PM2.5": 6.9,
+        "PM10": 4.1,
+        "SO2": 0.6
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Helsinki",
+      "country": "Finland",
+      "continent": "Europe",
+      "latitude": 60.1699,
+      "longitude": 24.9384,
+      "population_millions": 0.7,
+      "avg_aqi": 19,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.4,
+        "Ozone": 4.4,
+        "NO2": 17.2,
+        "PM2.5": 6.3,
+        "PM10": 3.6,
+        "SO2": 0.7
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Bergen",
+      "country": "Norway",
+      "continent": "Europe",
+      "latitude": 60.3913,
+      "longitude": 5.3221,
+      "population_millions": 0.3,
+      "avg_aqi": 20,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.6,
+        "Ozone": 4.6,
+        "NO2": 17.3,
+        "PM2.5": 6.5,
+        "PM10": 3.7,
+        "SO2": 0.8
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Zurich",
+      "country": "Switzerland",
+      "continent": "Europe",
+      "latitude": 47.3769,
+      "longitude": 8.5417,
+      "population_millions": 0.4,
+      "avg_aqi": 21,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.6,
+        "Ozone": 4.8,
+        "NO2": 18.4,
+        "PM2.5": 6.9,
+        "PM10": 4.0,
+        "SO2": 0.8
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Bern",
+      "country": "Switzerland",
+      "continent": "Europe",
+      "latitude": 46.948,
+      "longitude": 7.4474,
+      "population_millions": 0.1,
+      "avg_aqi": 22,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.8,
+        "Ozone": 5.2,
+        "NO2": 19.8,
+        "PM2.5": 7.3,
+        "PM10": 4.3,
+        "SO2": 0.9
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Honolulu",
+      "country": "USA",
+      "continent": "North America",
+      "latitude": 21.3069,
+      "longitude": -157.8583,
+      "population_millions": 1.0,
+      "avg_aqi": 22,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 2.3,
+        "Ozone": 19.6,
+        "NO2": 3.9,
+        "PM2.5": 8.3,
+        "PM10": 4.9,
+        "SO2": 0.9
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "continent": "Europe",
+      "latitude": 59.3293,
+      "longitude": 18.0686,
+      "population_millions": 1.0,
+      "avg_aqi": 22,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 2.9,
+        "Ozone": 5.1,
+        "NO2": 19.7,
+        "PM2.5": 7.3,
+        "PM10": 4.3,
+        "SO2": 0.9
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Copenhagen",
+      "country": "Denmark",
+      "continent": "Europe",
+      "latitude": 55.6761,
+      "longitude": 12.5683,
+      "population_millions": 1.3,
+      "avg_aqi": 25,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 3.2,
+        "Ozone": 5.7,
+        "NO2": 22.3,
+        "PM2.5": 8.3,
+        "PM10": 4.9,
+        "SO2": 1.0
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Vancouver",
+      "country": "Canada",
+      "continent": "North America",
+      "latitude": 49.2827,
+      "longitude": -123.1207,
+      "population_millions": 2.6,
+      "avg_aqi": 25,
+      "aqi_category": "Good",
+      "aqi_quality": "Best",
+      "health_risk": "Best",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 2.7,
+        "Ozone": 22.7,
+        "NO2": 4.7,
+        "PM2.5": 9.8,
+        "PM10": 5.9,
+        "SO2": 1.1
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "continent": "Oceania",
+      "latitude": -33.8688,
+      "longitude": 151.2093,
+      "population_millions": 5.3,
+      "avg_aqi": 27,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 3.0,
+        "Ozone": 25.1,
+        "NO2": 5.0,
+        "PM2.5": 10.7,
+        "PM10": 6.5,
+        "SO2": 1.2
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Edmonton",
+      "country": "Canada",
+      "continent": "North America",
+      "latitude": 53.5461,
+      "longitude": -113.4938,
+      "population_millions": 1.4,
+      "avg_aqi": 28,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 3.8,
+        "Ozone": 6.3,
+        "NO2": 24.9,
+        "PM2.5": 9.3,
+        "PM10": 5.6,
+        "SO2": 1.2
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Berlin",
+      "country": "Germany",
+      "continent": "Europe",
+      "latitude": 52.52,
+      "longitude": 13.405,
+      "population_millions": 3.6,
+      "avg_aqi": 44,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 6.0,
+        "Ozone": 10.7,
+        "NO2": 41.0,
+        "PM2.5": 14.9,
+        "PM10": 9.2,
+        "SO2": 2.1
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "continent": "Asia",
+      "latitude": 1.3521,
+      "longitude": 103.8198,
+      "population_millions": 5.9,
+      "avg_aqi": 48,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 8.1,
+        "Ozone": 14.1,
+        "NO2": 12.0,
+        "PM2.5": 45.5,
+        "PM10": 33.8,
+        "SO2": 3.6
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Tokyo",
+      "country": "Japan",
+      "continent": "Asia",
+      "latitude": 35.6762,
+      "longitude": 139.6503,
+      "population_millions": 14.0,
+      "avg_aqi": 49,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 8.3,
+        "Ozone": 14.0,
+        "NO2": 12.0,
+        "PM2.5": 45.9,
+        "PM10": 33.9,
+        "SO2": 3.6
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Buenos Aires",
+      "country": "Argentina",
+      "continent": "South America",
+      "latitude": -34.6037,
+      "longitude": -58.3816,
+      "population_millions": 15.4,
+      "avg_aqi": 50,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "CO",
+      "pollutant_averages": {
+        "CO": 47.0,
+        "Ozone": 9.7,
+        "NO2": 9.6,
+        "PM2.5": 24.9,
+        "PM10": 15.7,
+        "SO2": 2.6
+      },
+      "pollution_sources": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "ai_control_strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators"
+      ],
+      "ai_tech_stack": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    {
+      "city": "London",
+      "country": "UK",
+      "continent": "Europe",
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "population_millions": 9.0,
+      "avg_aqi": 50,
+      "aqi_category": "Good",
+      "aqi_quality": "Better",
+      "health_risk": "Healthy",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 7.1,
+        "Ozone": 12.2,
+        "NO2": 47.4,
+        "PM2.5": 17.7,
+        "PM10": 11.0,
+        "SO2": 2.5
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "continent": "Europe",
+      "latitude": 40.4168,
+      "longitude": -3.7038,
+      "population_millions": 6.7,
+      "avg_aqi": 52,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 7.4,
+        "Ozone": 12.9,
+        "NO2": 49.6,
+        "PM2.5": 18.0,
+        "PM10": 11.2,
+        "SO2": 2.7
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "continent": "Europe",
+      "latitude": 48.8566,
+      "longitude": 2.3522,
+      "population_millions": 11.0,
+      "avg_aqi": 54,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 7.4,
+        "Ozone": 12.9,
+        "NO2": 50.8,
+        "PM2.5": 18.3,
+        "PM10": 11.4,
+        "SO2": 2.7
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Nairobi",
+      "country": "Kenya",
+      "continent": "Africa",
+      "latitude": -1.2921,
+      "longitude": 36.8219,
+      "population_millions": 4.7,
+      "avg_aqi": 55,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 9.3,
+        "Ozone": 16.2,
+        "NO2": 13.3,
+        "PM2.5": 52.2,
+        "PM10": 38.8,
+        "SO2": 4.3
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "New York",
+      "country": "USA",
+      "continent": "North America",
+      "latitude": 40.7128,
+      "longitude": -74.006,
+      "population_millions": 8.3,
+      "avg_aqi": 56,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 7.7,
+        "Ozone": 13.5,
+        "NO2": 53.6,
+        "PM2.5": 19.3,
+        "PM10": 12.0,
+        "SO2": 3.0
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Bangkok",
+      "country": "Thailand",
+      "continent": "Asia",
+      "latitude": 13.7563,
+      "longitude": 100.5018,
+      "population_millions": 10.5,
+      "avg_aqi": 57,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 9.8,
+        "Ozone": 17.0,
+        "NO2": 14.3,
+        "PM2.5": 54.5,
+        "PM10": 40.5,
+        "SO2": 4.4
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Rome",
+      "country": "Italy",
+      "continent": "Europe",
+      "latitude": 41.9028,
+      "longitude": 12.4964,
+      "population_millions": 4.3,
+      "avg_aqi": 57,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "NO2",
+      "pollutant_averages": {
+        "CO": 8.3,
+        "Ozone": 14.2,
+        "NO2": 54.0,
+        "PM2.5": 19.9,
+        "PM10": 12.4,
+        "SO2": 2.9
+      },
+      "pollution_sources": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_control_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors"
+      ],
+      "ai_tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    {
+      "city": "Los Angeles",
+      "country": "USA",
+      "continent": "North America",
+      "latitude": 34.0522,
+      "longitude": -118.2437,
+      "population_millions": 13.0,
+      "avg_aqi": 60,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 7.0,
+        "Ozone": 57.4,
+        "NO2": 11.6,
+        "PM2.5": 23.9,
+        "PM10": 14.9,
+        "SO2": 3.2
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Seoul",
+      "country": "South Korea",
+      "continent": "Asia",
+      "latitude": 37.5665,
+      "longitude": 126.978,
+      "population_millions": 10.0,
+      "avg_aqi": 63,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 10.5,
+        "Ozone": 18.9,
+        "NO2": 15.4,
+        "PM2.5": 60.2,
+        "PM10": 44.5,
+        "SO2": 4.9
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "continent": "South America",
+      "latitude": -23.5505,
+      "longitude": -46.6333,
+      "population_millions": 22.0,
+      "avg_aqi": 64,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 7.5,
+        "Ozone": 60.8,
+        "NO2": 12.3,
+        "PM2.5": 25.9,
+        "PM10": 16.2,
+        "SO2": 3.3
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Istanbul",
+      "country": "Turkey",
+      "continent": "Europe",
+      "latitude": 41.0082,
+      "longitude": 28.9784,
+      "population_millions": 15.5,
+      "avg_aqi": 93,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 15.8,
+        "Ozone": 28.5,
+        "NO2": 23.0,
+        "PM2.5": 90.4,
+        "PM10": 67.6,
+        "SO2": 7.7
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "continent": "Africa",
+      "latitude": -26.2041,
+      "longitude": 28.0473,
+      "population_millions": 5.6,
+      "avg_aqi": 93,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 16.3,
+        "Ozone": 27.6,
+        "NO2": 22.5,
+        "PM2.5": 90.1,
+        "PM10": 67.4,
+        "SO2": 7.4
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Lima",
+      "country": "Peru",
+      "continent": "South America",
+      "latitude": -12.0464,
+      "longitude": -77.0428,
+      "population_millions": 10.7,
+      "avg_aqi": 98,
+      "aqi_category": "Moderate",
+      "aqi_quality": "Good",
+      "health_risk": "Moderate",
+      "dominant_pollutant": "CO",
+      "pollutant_averages": {
+        "CO": 96.0,
+        "Ozone": 19.5,
+        "NO2": 19.0,
+        "PM2.5": 49.1,
+        "PM10": 31.3,
+        "SO2": 5.5
+      },
+      "pollution_sources": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "ai_control_strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators"
+      ],
+      "ai_tech_stack": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    {
+      "city": "Shanghai",
+      "country": "China",
+      "continent": "Asia",
+      "latitude": 31.2304,
+      "longitude": 121.4737,
+      "population_millions": 28.5,
+      "avg_aqi": 103,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 17.8,
+        "Ozone": 30.7,
+        "NO2": 25.5,
+        "PM2.5": 100.6,
+        "PM10": 75.3,
+        "SO2": 8.3
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Chengdu",
+      "country": "China",
+      "continent": "Asia",
+      "latitude": 30.5728,
+      "longitude": 104.0668,
+      "population_millions": 16.3,
+      "avg_aqi": 104,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 17.7,
+        "Ozone": 30.8,
+        "NO2": 24.8,
+        "PM2.5": 101.1,
+        "PM10": 75.0,
+        "SO2": 8.5
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Mexico City",
+      "country": "Mexico",
+      "continent": "North America",
+      "latitude": 19.4326,
+      "longitude": -99.1332,
+      "population_millions": 21.8,
+      "avg_aqi": 106,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "Ozone",
+      "pollutant_averages": {
+        "CO": 12.6,
+        "Ozone": 103.7,
+        "NO2": 20.8,
+        "PM2.5": 42.2,
+        "PM10": 27.0,
+        "SO2": 5.9
+      },
+      "pollution_sources": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_control_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours"
+      ],
+      "ai_tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    {
+      "city": "Hanoi",
+      "country": "Vietnam",
+      "continent": "Asia",
+      "latitude": 21.0278,
+      "longitude": 105.8342,
+      "population_millions": 8.1,
+      "avg_aqi": 109,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 18.8,
+        "Ozone": 32.3,
+        "NO2": 26.9,
+        "PM2.5": 106.3,
+        "PM10": 78.9,
+        "SO2": 8.8
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Mumbai",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "population_millions": 20.7,
+      "avg_aqi": 109,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 18.5,
+        "Ozone": 32.9,
+        "NO2": 27.3,
+        "PM2.5": 106.0,
+        "PM10": 78.6,
+        "SO2": 8.8
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Jakarta",
+      "country": "Indonesia",
+      "continent": "Asia",
+      "latitude": -6.2088,
+      "longitude": 106.8456,
+      "population_millions": 10.6,
+      "avg_aqi": 112,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 19.7,
+        "Ozone": 33.7,
+        "NO2": 27.7,
+        "PM2.5": 109.0,
+        "PM10": 81.2,
+        "SO2": 9.0
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Kolkata",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 22.5726,
+      "longitude": 88.3639,
+      "population_millions": 14.9,
+      "avg_aqi": 117,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 20.1,
+        "Ozone": 35.3,
+        "NO2": 29.4,
+        "PM2.5": 114.4,
+        "PM10": 85.1,
+        "SO2": 10.1
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Accra",
+      "country": "Ghana",
+      "continent": "Africa",
+      "latitude": 5.6037,
+      "longitude": -0.187,
+      "population_millions": 4.0,
+      "avg_aqi": 149,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "CO",
+      "pollutant_averages": {
+        "CO": 146.1,
+        "Ozone": 29.1,
+        "NO2": 29.0,
+        "PM2.5": 75.0,
+        "PM10": 47.9,
+        "SO2": 8.4
+      },
+      "pollution_sources": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "ai_control_strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators"
+      ],
+      "ai_tech_stack": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    {
+      "city": "Ho Chi Minh",
+      "country": "Vietnam",
+      "continent": "Asia",
+      "latitude": 10.8231,
+      "longitude": 106.6297,
+      "population_millions": 9.0,
+      "avg_aqi": 150,
+      "aqi_category": "Unhealthy for Sensitive Groups",
+      "aqi_quality": "Moderate",
+      "health_risk": "Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 25.3,
+        "Ozone": 45.6,
+        "NO2": 37.1,
+        "PM2.5": 146.8,
+        "PM10": 109.0,
+        "SO2": 12.2
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Wuhan",
+      "country": "China",
+      "continent": "Asia",
+      "latitude": 30.5928,
+      "longitude": 114.3055,
+      "population_millions": 11.1,
+      "avg_aqi": 153,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 25.6,
+        "Ozone": 45.4,
+        "NO2": 37.0,
+        "PM2.5": 149.9,
+        "PM10": 113.1,
+        "SO2": 12.4
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Kathmandu",
+      "country": "Nepal",
+      "continent": "Asia",
+      "latitude": 27.7172,
+      "longitude": 85.324,
+      "population_millions": 1.4,
+      "avg_aqi": 155,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 26.8,
+        "Ozone": 46.0,
+        "NO2": 38.5,
+        "PM2.5": 152.8,
+        "PM10": 114.0,
+        "SO2": 12.5
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Beijing",
+      "country": "China",
+      "continent": "Asia",
+      "latitude": 39.9042,
+      "longitude": 116.4074,
+      "population_millions": 21.5,
+      "avg_aqi": 156,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 27.4,
+        "Ozone": 46.5,
+        "NO2": 38.1,
+        "PM2.5": 152.7,
+        "PM10": 113.7,
+        "SO2": 12.9
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Cairo",
+      "country": "Egypt",
+      "continent": "Africa",
+      "latitude": 30.0444,
+      "longitude": 31.2357,
+      "population_millions": 20.9,
+      "avg_aqi": 159,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 27.3,
+        "Ozone": 47.0,
+        "NO2": 40.2,
+        "PM2.5": 156.4,
+        "PM10": 117.0,
+        "SO2": 12.7
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Lagos",
+      "country": "Nigeria",
+      "continent": "Africa",
+      "latitude": 6.5244,
+      "longitude": 3.3792,
+      "population_millions": 15.4,
+      "avg_aqi": 160,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "CO",
+      "pollutant_averages": {
+        "CO": 157.0,
+        "Ozone": 31.7,
+        "NO2": 31.6,
+        "PM2.5": 80.1,
+        "PM10": 51.1,
+        "SO2": 9.1
+      },
+      "pollution_sources": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "ai_control_strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators"
+      ],
+      "ai_tech_stack": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    {
+      "city": "Ulaanbaatar",
+      "country": "Mongolia",
+      "continent": "Asia",
+      "latitude": 47.8864,
+      "longitude": 106.9057,
+      "population_millions": 1.5,
+      "avg_aqi": 163,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 28.1,
+        "Ozone": 48.5,
+        "NO2": 40.1,
+        "PM2.5": 160.2,
+        "PM10": 119.7,
+        "SO2": 13.4
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Karachi",
+      "country": "Pakistan",
+      "continent": "Asia",
+      "latitude": 24.8607,
+      "longitude": 67.0011,
+      "population_millions": 16.1,
+      "avg_aqi": 168,
+      "aqi_category": "Unhealthy",
+      "aqi_quality": "Bad",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 28.4,
+        "Ozone": 49.9,
+        "NO2": 41.6,
+        "PM2.5": 164.9,
+        "PM10": 123.6,
+        "SO2": 13.7
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Lucknow",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 26.8467,
+      "longitude": 80.9462,
+      "population_millions": 3.4,
+      "avg_aqi": 226,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 38.9,
+        "Ozone": 68.0,
+        "NO2": 55.3,
+        "PM2.5": 223.6,
+        "PM10": 167.3,
+        "SO2": 18.7
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Dhaka",
+      "country": "Bangladesh",
+      "continent": "Asia",
+      "latitude": 23.8103,
+      "longitude": 90.4125,
+      "population_millions": 22.0,
+      "avg_aqi": 231,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 40.1,
+        "Ozone": 67.6,
+        "NO2": 57.3,
+        "PM2.5": 228.7,
+        "PM10": 169.9,
+        "SO2": 19.3
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Peshawar",
+      "country": "Pakistan",
+      "continent": "Asia",
+      "latitude": 34.0151,
+      "longitude": 71.5249,
+      "population_millions": 2.0,
+      "avg_aqi": 232,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 39.7,
+        "Ozone": 69.1,
+        "NO2": 58.0,
+        "PM2.5": 229.8,
+        "PM10": 170.0,
+        "SO2": 19.2
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Kanpur",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 26.4499,
+      "longitude": 80.3319,
+      "population_millions": 3.1,
+      "avg_aqi": 234,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 41.0,
+        "Ozone": 69.1,
+        "NO2": 57.8,
+        "PM2.5": 231.1,
+        "PM10": 172.5,
+        "SO2": 19.1
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Delhi",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "population_millions": 32.0,
+      "avg_aqi": 235,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 41.0,
+        "Ozone": 71.0,
+        "NO2": 58.5,
+        "PM2.5": 232.0,
+        "PM10": 171.7,
+        "SO2": 20.1
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Faisalabad",
+      "country": "Pakistan",
+      "continent": "Asia",
+      "latitude": 31.4504,
+      "longitude": 73.135,
+      "population_millions": 3.2,
+      "avg_aqi": 236,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 40.7,
+        "Ozone": 70.1,
+        "NO2": 58.3,
+        "PM2.5": 233.0,
+        "PM10": 175.5,
+        "SO2": 19.3
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Lahore",
+      "country": "Pakistan",
+      "continent": "Asia",
+      "latitude": 31.5204,
+      "longitude": 74.3587,
+      "population_millions": 13.5,
+      "avg_aqi": 240,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 40.9,
+        "Ozone": 71.9,
+        "NO2": 59.6,
+        "PM2.5": 237.0,
+        "PM10": 177.7,
+        "SO2": 19.8
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Patna",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 25.6093,
+      "longitude": 85.1376,
+      "population_millions": 2.5,
+      "avg_aqi": 241,
+      "aqi_category": "Very Unhealthy",
+      "aqi_quality": "Worse",
+      "health_risk": "Very Unhealthy",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 40.9,
+        "Ozone": 71.5,
+        "NO2": 59.4,
+        "PM2.5": 237.9,
+        "PM10": 177.8,
+        "SO2": 20.2
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Noida",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 28.5355,
+      "longitude": 77.391,
+      "population_millions": 0.6,
+      "avg_aqi": 362,
+      "aqi_category": "Hazardous",
+      "aqi_quality": "Worst",
+      "health_risk": "Hazardous",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 63.3,
+        "Ozone": 108.4,
+        "NO2": 87.3,
+        "PM2.5": 358.7,
+        "PM10": 269.4,
+        "SO2": 29.9
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Ghaziabad",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 28.6692,
+      "longitude": 77.4538,
+      "population_millions": 2.4,
+      "avg_aqi": 376,
+      "aqi_category": "Hazardous",
+      "aqi_quality": "Worst",
+      "health_risk": "Hazardous",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 65.3,
+        "Ozone": 111.6,
+        "NO2": 96.5,
+        "PM2.5": 372.9,
+        "PM10": 279.7,
+        "SO2": 31.4
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Hotan",
+      "country": "China",
+      "continent": "Asia",
+      "latitude": 37.11,
+      "longitude": 79.93,
+      "population_millions": 0.4,
+      "avg_aqi": 384,
+      "aqi_category": "Hazardous",
+      "aqi_quality": "Worst",
+      "health_risk": "Hazardous",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 67.7,
+        "Ozone": 111.4,
+        "NO2": 93.5,
+        "PM2.5": 380.8,
+        "PM10": 287.0,
+        "SO2": 31.9
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Bhiwadi",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 28.2096,
+      "longitude": 76.861,
+      "population_millions": 0.2,
+      "avg_aqi": 387,
+      "aqi_category": "Hazardous",
+      "aqi_quality": "Worst",
+      "health_risk": "Hazardous",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 68.3,
+        "Ozone": 115.7,
+        "NO2": 95.9,
+        "PM2.5": 384.8,
+        "PM10": 288.6,
+        "SO2": 33.2
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    {
+      "city": "Muzaffarnagar",
+      "country": "India",
+      "continent": "Asia",
+      "latitude": 29.4727,
+      "longitude": 77.7085,
+      "population_millions": 0.5,
+      "avg_aqi": 389,
+      "aqi_category": "Hazardous",
+      "aqi_quality": "Worst",
+      "health_risk": "Hazardous",
+      "dominant_pollutant": "PM2.5",
+      "pollutant_averages": {
+        "CO": 68.7,
+        "Ozone": 119.7,
+        "NO2": 96.6,
+        "PM2.5": 385.8,
+        "PM10": 288.2,
+        "SO2": 31.5
+      },
+      "pollution_sources": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_control_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time"
+      ],
+      "ai_tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    }
+  ],
+  "category_wise_cities": {
+    "Good": [
+      {
+        "city": "Queenstown",
+        "country": "New Zealand",
+        "avg_aqi": 15,
+        "aqi_quality": "Best",
+        "latitude": -45.0312,
+        "longitude": 168.6626,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Hobart",
+        "country": "Australia",
+        "avg_aqi": 17,
+        "aqi_quality": "Best",
+        "latitude": -42.8821,
+        "longitude": 147.3272,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Reykjavik",
+        "country": "Iceland",
+        "avg_aqi": 17,
+        "aqi_quality": "Best",
+        "latitude": 64.1466,
+        "longitude": -21.9426,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Wellington",
+        "country": "New Zealand",
+        "avg_aqi": 18,
+        "aqi_quality": "Best",
+        "latitude": -41.2865,
+        "longitude": 174.7762,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Helsinki",
+        "country": "Finland",
+        "avg_aqi": 19,
+        "aqi_quality": "Best",
+        "latitude": 60.1699,
+        "longitude": 24.9384,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bergen",
+        "country": "Norway",
+        "avg_aqi": 20,
+        "aqi_quality": "Best",
+        "latitude": 60.3913,
+        "longitude": 5.3221,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Zurich",
+        "country": "Switzerland",
+        "avg_aqi": 21,
+        "aqi_quality": "Best",
+        "latitude": 47.3769,
+        "longitude": 8.5417,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bern",
+        "country": "Switzerland",
+        "avg_aqi": 22,
+        "aqi_quality": "Best",
+        "latitude": 46.948,
+        "longitude": 7.4474,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Honolulu",
+        "country": "USA",
+        "avg_aqi": 22,
+        "aqi_quality": "Best",
+        "latitude": 21.3069,
+        "longitude": -157.8583,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Stockholm",
+        "country": "Sweden",
+        "avg_aqi": 22,
+        "aqi_quality": "Best",
+        "latitude": 59.3293,
+        "longitude": 18.0686,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Copenhagen",
+        "country": "Denmark",
+        "avg_aqi": 25,
+        "aqi_quality": "Best",
+        "latitude": 55.6761,
+        "longitude": 12.5683,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Vancouver",
+        "country": "Canada",
+        "avg_aqi": 25,
+        "aqi_quality": "Best",
+        "latitude": 49.2827,
+        "longitude": -123.1207,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Sydney",
+        "country": "Australia",
+        "avg_aqi": 27,
+        "aqi_quality": "Better",
+        "latitude": -33.8688,
+        "longitude": 151.2093,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Edmonton",
+        "country": "Canada",
+        "avg_aqi": 28,
+        "aqi_quality": "Better",
+        "latitude": 53.5461,
+        "longitude": -113.4938,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Berlin",
+        "country": "Germany",
+        "avg_aqi": 44,
+        "aqi_quality": "Better",
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Singapore",
+        "country": "Singapore",
+        "avg_aqi": 48,
+        "aqi_quality": "Better",
+        "latitude": 1.3521,
+        "longitude": 103.8198,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Tokyo",
+        "country": "Japan",
+        "avg_aqi": 49,
+        "aqi_quality": "Better",
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Buenos Aires",
+        "country": "Argentina",
+        "avg_aqi": 50,
+        "aqi_quality": "Better",
+        "latitude": -34.6037,
+        "longitude": -58.3816,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "London",
+        "country": "UK",
+        "avg_aqi": 50,
+        "aqi_quality": "Better",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "dominant_pollutant": "NO2"
+      }
+    ],
+    "Moderate": [
+      {
+        "city": "Madrid",
+        "country": "Spain",
+        "avg_aqi": 52,
+        "aqi_quality": "Good",
+        "latitude": 40.4168,
+        "longitude": -3.7038,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Paris",
+        "country": "France",
+        "avg_aqi": 54,
+        "aqi_quality": "Good",
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Nairobi",
+        "country": "Kenya",
+        "avg_aqi": 55,
+        "aqi_quality": "Good",
+        "latitude": -1.2921,
+        "longitude": 36.8219,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "New York",
+        "country": "USA",
+        "avg_aqi": 56,
+        "aqi_quality": "Good",
+        "latitude": 40.7128,
+        "longitude": -74.006,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bangkok",
+        "country": "Thailand",
+        "avg_aqi": 57,
+        "aqi_quality": "Good",
+        "latitude": 13.7563,
+        "longitude": 100.5018,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Rome",
+        "country": "Italy",
+        "avg_aqi": 57,
+        "aqi_quality": "Good",
+        "latitude": 41.9028,
+        "longitude": 12.4964,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Los Angeles",
+        "country": "USA",
+        "avg_aqi": 60,
+        "aqi_quality": "Good",
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Seoul",
+        "country": "South Korea",
+        "avg_aqi": 63,
+        "aqi_quality": "Good",
+        "latitude": 37.5665,
+        "longitude": 126.978,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "São Paulo",
+        "country": "Brazil",
+        "avg_aqi": 64,
+        "aqi_quality": "Good",
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Istanbul",
+        "country": "Turkey",
+        "avg_aqi": 93,
+        "aqi_quality": "Good",
+        "latitude": 41.0082,
+        "longitude": 28.9784,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Johannesburg",
+        "country": "South Africa",
+        "avg_aqi": 93,
+        "aqi_quality": "Good",
+        "latitude": -26.2041,
+        "longitude": 28.0473,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lima",
+        "country": "Peru",
+        "avg_aqi": 98,
+        "aqi_quality": "Good",
+        "latitude": -12.0464,
+        "longitude": -77.0428,
+        "dominant_pollutant": "CO"
+      }
+    ],
+    "Unhealthy for Sensitive Groups": [
+      {
+        "city": "Shanghai",
+        "country": "China",
+        "avg_aqi": 103,
+        "aqi_quality": "Moderate",
+        "latitude": 31.2304,
+        "longitude": 121.4737,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Chengdu",
+        "country": "China",
+        "avg_aqi": 104,
+        "aqi_quality": "Moderate",
+        "latitude": 30.5728,
+        "longitude": 104.0668,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Mexico City",
+        "country": "Mexico",
+        "avg_aqi": 106,
+        "aqi_quality": "Moderate",
+        "latitude": 19.4326,
+        "longitude": -99.1332,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "avg_aqi": 109,
+        "aqi_quality": "Moderate",
+        "latitude": 21.0278,
+        "longitude": 105.8342,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Mumbai",
+        "country": "India",
+        "avg_aqi": 109,
+        "aqi_quality": "Moderate",
+        "latitude": 19.076,
+        "longitude": 72.8777,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "avg_aqi": 112,
+        "aqi_quality": "Moderate",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kolkata",
+        "country": "India",
+        "avg_aqi": 117,
+        "aqi_quality": "Moderate",
+        "latitude": 22.5726,
+        "longitude": 88.3639,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Accra",
+        "country": "Ghana",
+        "avg_aqi": 149,
+        "aqi_quality": "Moderate",
+        "latitude": 5.6037,
+        "longitude": -0.187,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "Ho Chi Minh",
+        "country": "Vietnam",
+        "avg_aqi": 150,
+        "aqi_quality": "Moderate",
+        "latitude": 10.8231,
+        "longitude": 106.6297,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Unhealthy": [
+      {
+        "city": "Wuhan",
+        "country": "China",
+        "avg_aqi": 153,
+        "aqi_quality": "Bad",
+        "latitude": 30.5928,
+        "longitude": 114.3055,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kathmandu",
+        "country": "Nepal",
+        "avg_aqi": 155,
+        "aqi_quality": "Bad",
+        "latitude": 27.7172,
+        "longitude": 85.324,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Beijing",
+        "country": "China",
+        "avg_aqi": 156,
+        "aqi_quality": "Bad",
+        "latitude": 39.9042,
+        "longitude": 116.4074,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Cairo",
+        "country": "Egypt",
+        "avg_aqi": 159,
+        "aqi_quality": "Bad",
+        "latitude": 30.0444,
+        "longitude": 31.2357,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lagos",
+        "country": "Nigeria",
+        "avg_aqi": 160,
+        "aqi_quality": "Bad",
+        "latitude": 6.5244,
+        "longitude": 3.3792,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "Ulaanbaatar",
+        "country": "Mongolia",
+        "avg_aqi": 163,
+        "aqi_quality": "Bad",
+        "latitude": 47.8864,
+        "longitude": 106.9057,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Karachi",
+        "country": "Pakistan",
+        "avg_aqi": 168,
+        "aqi_quality": "Bad",
+        "latitude": 24.8607,
+        "longitude": 67.0011,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Very Unhealthy": [
+      {
+        "city": "Lucknow",
+        "country": "India",
+        "avg_aqi": 226,
+        "aqi_quality": "Worse",
+        "latitude": 26.8467,
+        "longitude": 80.9462,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Dhaka",
+        "country": "Bangladesh",
+        "avg_aqi": 231,
+        "aqi_quality": "Worse",
+        "latitude": 23.8103,
+        "longitude": 90.4125,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Peshawar",
+        "country": "Pakistan",
+        "avg_aqi": 232,
+        "aqi_quality": "Worse",
+        "latitude": 34.0151,
+        "longitude": 71.5249,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kanpur",
+        "country": "India",
+        "avg_aqi": 234,
+        "aqi_quality": "Worse",
+        "latitude": 26.4499,
+        "longitude": 80.3319,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Delhi",
+        "country": "India",
+        "avg_aqi": 235,
+        "aqi_quality": "Worse",
+        "latitude": 28.7041,
+        "longitude": 77.1025,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Faisalabad",
+        "country": "Pakistan",
+        "avg_aqi": 236,
+        "aqi_quality": "Worse",
+        "latitude": 31.4504,
+        "longitude": 73.135,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lahore",
+        "country": "Pakistan",
+        "avg_aqi": 240,
+        "aqi_quality": "Worse",
+        "latitude": 31.5204,
+        "longitude": 74.3587,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Patna",
+        "country": "India",
+        "avg_aqi": 241,
+        "aqi_quality": "Worse",
+        "latitude": 25.6093,
+        "longitude": 85.1376,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Hazardous": [
+      {
+        "city": "Noida",
+        "country": "India",
+        "avg_aqi": 362,
+        "aqi_quality": "Worst",
+        "latitude": 28.5355,
+        "longitude": 77.391,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Ghaziabad",
+        "country": "India",
+        "avg_aqi": 376,
+        "aqi_quality": "Worst",
+        "latitude": 28.6692,
+        "longitude": 77.4538,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Hotan",
+        "country": "China",
+        "avg_aqi": 384,
+        "aqi_quality": "Worst",
+        "latitude": 37.11,
+        "longitude": 79.93,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Bhiwadi",
+        "country": "India",
+        "avg_aqi": 387,
+        "aqi_quality": "Worst",
+        "latitude": 28.2096,
+        "longitude": 76.861,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Muzaffarnagar",
+        "country": "India",
+        "avg_aqi": 389,
+        "aqi_quality": "Worst",
+        "latitude": 29.4727,
+        "longitude": 77.7085,
+        "dominant_pollutant": "PM2.5"
+      }
+    ]
+  },
+  "quality_wise_cities": {
+    "Best": [
+      {
+        "city": "Queenstown",
+        "country": "New Zealand",
+        "avg_aqi": 15,
+        "latitude": -45.0312,
+        "longitude": 168.6626,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Hobart",
+        "country": "Australia",
+        "avg_aqi": 17,
+        "latitude": -42.8821,
+        "longitude": 147.3272,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Reykjavik",
+        "country": "Iceland",
+        "avg_aqi": 17,
+        "latitude": 64.1466,
+        "longitude": -21.9426,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Wellington",
+        "country": "New Zealand",
+        "avg_aqi": 18,
+        "latitude": -41.2865,
+        "longitude": 174.7762,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Helsinki",
+        "country": "Finland",
+        "avg_aqi": 19,
+        "latitude": 60.1699,
+        "longitude": 24.9384,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bergen",
+        "country": "Norway",
+        "avg_aqi": 20,
+        "latitude": 60.3913,
+        "longitude": 5.3221,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Zurich",
+        "country": "Switzerland",
+        "avg_aqi": 21,
+        "latitude": 47.3769,
+        "longitude": 8.5417,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bern",
+        "country": "Switzerland",
+        "avg_aqi": 22,
+        "latitude": 46.948,
+        "longitude": 7.4474,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Honolulu",
+        "country": "USA",
+        "avg_aqi": 22,
+        "latitude": 21.3069,
+        "longitude": -157.8583,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Stockholm",
+        "country": "Sweden",
+        "avg_aqi": 22,
+        "latitude": 59.3293,
+        "longitude": 18.0686,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Copenhagen",
+        "country": "Denmark",
+        "avg_aqi": 25,
+        "latitude": 55.6761,
+        "longitude": 12.5683,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Vancouver",
+        "country": "Canada",
+        "avg_aqi": 25,
+        "latitude": 49.2827,
+        "longitude": -123.1207,
+        "dominant_pollutant": "Ozone"
+      }
+    ],
+    "Better": [
+      {
+        "city": "Sydney",
+        "country": "Australia",
+        "avg_aqi": 27,
+        "latitude": -33.8688,
+        "longitude": 151.2093,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Edmonton",
+        "country": "Canada",
+        "avg_aqi": 28,
+        "latitude": 53.5461,
+        "longitude": -113.4938,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Berlin",
+        "country": "Germany",
+        "avg_aqi": 44,
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Singapore",
+        "country": "Singapore",
+        "avg_aqi": 48,
+        "latitude": 1.3521,
+        "longitude": 103.8198,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Tokyo",
+        "country": "Japan",
+        "avg_aqi": 49,
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Buenos Aires",
+        "country": "Argentina",
+        "avg_aqi": 50,
+        "latitude": -34.6037,
+        "longitude": -58.3816,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "London",
+        "country": "UK",
+        "avg_aqi": 50,
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "dominant_pollutant": "NO2"
+      }
+    ],
+    "Good": [
+      {
+        "city": "Madrid",
+        "country": "Spain",
+        "avg_aqi": 52,
+        "latitude": 40.4168,
+        "longitude": -3.7038,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Paris",
+        "country": "France",
+        "avg_aqi": 54,
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Nairobi",
+        "country": "Kenya",
+        "avg_aqi": 55,
+        "latitude": -1.2921,
+        "longitude": 36.8219,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "New York",
+        "country": "USA",
+        "avg_aqi": 56,
+        "latitude": 40.7128,
+        "longitude": -74.006,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Bangkok",
+        "country": "Thailand",
+        "avg_aqi": 57,
+        "latitude": 13.7563,
+        "longitude": 100.5018,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Rome",
+        "country": "Italy",
+        "avg_aqi": 57,
+        "latitude": 41.9028,
+        "longitude": 12.4964,
+        "dominant_pollutant": "NO2"
+      },
+      {
+        "city": "Los Angeles",
+        "country": "USA",
+        "avg_aqi": 60,
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Seoul",
+        "country": "South Korea",
+        "avg_aqi": 63,
+        "latitude": 37.5665,
+        "longitude": 126.978,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "São Paulo",
+        "country": "Brazil",
+        "avg_aqi": 64,
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Istanbul",
+        "country": "Turkey",
+        "avg_aqi": 93,
+        "latitude": 41.0082,
+        "longitude": 28.9784,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Johannesburg",
+        "country": "South Africa",
+        "avg_aqi": 93,
+        "latitude": -26.2041,
+        "longitude": 28.0473,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lima",
+        "country": "Peru",
+        "avg_aqi": 98,
+        "latitude": -12.0464,
+        "longitude": -77.0428,
+        "dominant_pollutant": "CO"
+      }
+    ],
+    "Moderate": [
+      {
+        "city": "Shanghai",
+        "country": "China",
+        "avg_aqi": 103,
+        "latitude": 31.2304,
+        "longitude": 121.4737,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Chengdu",
+        "country": "China",
+        "avg_aqi": 104,
+        "latitude": 30.5728,
+        "longitude": 104.0668,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Mexico City",
+        "country": "Mexico",
+        "avg_aqi": 106,
+        "latitude": 19.4326,
+        "longitude": -99.1332,
+        "dominant_pollutant": "Ozone"
+      },
+      {
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "avg_aqi": 109,
+        "latitude": 21.0278,
+        "longitude": 105.8342,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Mumbai",
+        "country": "India",
+        "avg_aqi": 109,
+        "latitude": 19.076,
+        "longitude": 72.8777,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Jakarta",
+        "country": "Indonesia",
+        "avg_aqi": 112,
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kolkata",
+        "country": "India",
+        "avg_aqi": 117,
+        "latitude": 22.5726,
+        "longitude": 88.3639,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Accra",
+        "country": "Ghana",
+        "avg_aqi": 149,
+        "latitude": 5.6037,
+        "longitude": -0.187,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "Ho Chi Minh",
+        "country": "Vietnam",
+        "avg_aqi": 150,
+        "latitude": 10.8231,
+        "longitude": 106.6297,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Bad": [
+      {
+        "city": "Wuhan",
+        "country": "China",
+        "avg_aqi": 153,
+        "latitude": 30.5928,
+        "longitude": 114.3055,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kathmandu",
+        "country": "Nepal",
+        "avg_aqi": 155,
+        "latitude": 27.7172,
+        "longitude": 85.324,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Beijing",
+        "country": "China",
+        "avg_aqi": 156,
+        "latitude": 39.9042,
+        "longitude": 116.4074,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Cairo",
+        "country": "Egypt",
+        "avg_aqi": 159,
+        "latitude": 30.0444,
+        "longitude": 31.2357,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lagos",
+        "country": "Nigeria",
+        "avg_aqi": 160,
+        "latitude": 6.5244,
+        "longitude": 3.3792,
+        "dominant_pollutant": "CO"
+      },
+      {
+        "city": "Ulaanbaatar",
+        "country": "Mongolia",
+        "avg_aqi": 163,
+        "latitude": 47.8864,
+        "longitude": 106.9057,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Karachi",
+        "country": "Pakistan",
+        "avg_aqi": 168,
+        "latitude": 24.8607,
+        "longitude": 67.0011,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Worse": [
+      {
+        "city": "Lucknow",
+        "country": "India",
+        "avg_aqi": 226,
+        "latitude": 26.8467,
+        "longitude": 80.9462,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Dhaka",
+        "country": "Bangladesh",
+        "avg_aqi": 231,
+        "latitude": 23.8103,
+        "longitude": 90.4125,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Peshawar",
+        "country": "Pakistan",
+        "avg_aqi": 232,
+        "latitude": 34.0151,
+        "longitude": 71.5249,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Kanpur",
+        "country": "India",
+        "avg_aqi": 234,
+        "latitude": 26.4499,
+        "longitude": 80.3319,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Delhi",
+        "country": "India",
+        "avg_aqi": 235,
+        "latitude": 28.7041,
+        "longitude": 77.1025,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Faisalabad",
+        "country": "Pakistan",
+        "avg_aqi": 236,
+        "latitude": 31.4504,
+        "longitude": 73.135,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Lahore",
+        "country": "Pakistan",
+        "avg_aqi": 240,
+        "latitude": 31.5204,
+        "longitude": 74.3587,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Patna",
+        "country": "India",
+        "avg_aqi": 241,
+        "latitude": 25.6093,
+        "longitude": 85.1376,
+        "dominant_pollutant": "PM2.5"
+      }
+    ],
+    "Worst": [
+      {
+        "city": "Noida",
+        "country": "India",
+        "avg_aqi": 362,
+        "latitude": 28.5355,
+        "longitude": 77.391,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Ghaziabad",
+        "country": "India",
+        "avg_aqi": 376,
+        "latitude": 28.6692,
+        "longitude": 77.4538,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Hotan",
+        "country": "China",
+        "avg_aqi": 384,
+        "latitude": 37.11,
+        "longitude": 79.93,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Bhiwadi",
+        "country": "India",
+        "avg_aqi": 387,
+        "latitude": 28.2096,
+        "longitude": 76.861,
+        "dominant_pollutant": "PM2.5"
+      },
+      {
+        "city": "Muzaffarnagar",
+        "country": "India",
+        "avg_aqi": 389,
+        "latitude": 29.4727,
+        "longitude": 77.7085,
+        "dominant_pollutant": "PM2.5"
+      }
+    ]
+  },
+  "pollutant_hotspots": {
+    "PM2.5": {
+      "top_cities": [
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 385.8,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 384.8,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 380.8,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 372.9,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 358.7,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Patna",
+          "country": "India",
+          "avg_value": 237.9,
+          "latitude": 25.6093,
+          "longitude": 85.1376
+        },
+        {
+          "city": "Lahore",
+          "country": "Pakistan",
+          "avg_value": 237.0,
+          "latitude": 31.5204,
+          "longitude": 74.3587
+        },
+        {
+          "city": "Faisalabad",
+          "country": "Pakistan",
+          "avg_value": 233.0,
+          "latitude": 31.4504,
+          "longitude": 73.135
+        },
+        {
+          "city": "Delhi",
+          "country": "India",
+          "avg_value": 232.0,
+          "latitude": 28.7041,
+          "longitude": 77.1025
+        },
+        {
+          "city": "Kanpur",
+          "country": "India",
+          "avg_value": 231.1,
+          "latitude": 26.4499,
+          "longitude": 80.3319
+        }
+      ],
+      "source": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "ai_strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time",
+        "Implement IoT dust suppression systems on construction sites",
+        "AI-powered emission monitoring for industrial zones with auto-alerts",
+        "Deploy predictive models to issue early warnings 48hrs before PM2.5 spikes"
+      ],
+      "tech_stack": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    "NO2": {
+      "top_cities": [
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 96.6,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 96.5,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 95.9,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 93.5,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 87.3,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Lahore",
+          "country": "Pakistan",
+          "avg_value": 59.6,
+          "latitude": 31.5204,
+          "longitude": 74.3587
+        },
+        {
+          "city": "Patna",
+          "country": "India",
+          "avg_value": 59.4,
+          "latitude": 25.6093,
+          "longitude": 85.1376
+        },
+        {
+          "city": "Delhi",
+          "country": "India",
+          "avg_value": 58.5,
+          "latitude": 28.7041,
+          "longitude": 77.1025
+        },
+        {
+          "city": "Faisalabad",
+          "country": "Pakistan",
+          "avg_value": 58.3,
+          "latitude": 31.4504,
+          "longitude": 73.135
+        },
+        {
+          "city": "Peshawar",
+          "country": "Pakistan",
+          "avg_value": 58.0,
+          "latitude": 34.0151,
+          "longitude": 71.5249
+        }
+      ],
+      "source": "Vehicle engines (diesel), power plants, industrial boilers",
+      "ai_strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors",
+        "Predictive maintenance alerts for industrial emission control equipment",
+        "AI route optimization for delivery vehicles to cut diesel NOx output",
+        "Deploy neural network models to identify illegal emission vehicles"
+      ],
+      "tech_stack": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    "Ozone": {
+      "top_cities": [
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 119.7,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 115.7,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 111.6,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 111.4,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 108.4,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Mexico City",
+          "country": "Mexico",
+          "avg_value": 103.7,
+          "latitude": 19.4326,
+          "longitude": -99.1332
+        },
+        {
+          "city": "Lahore",
+          "country": "Pakistan",
+          "avg_value": 71.9,
+          "latitude": 31.5204,
+          "longitude": 74.3587
+        },
+        {
+          "city": "Patna",
+          "country": "India",
+          "avg_value": 71.5,
+          "latitude": 25.6093,
+          "longitude": 85.1376
+        },
+        {
+          "city": "Delhi",
+          "country": "India",
+          "avg_value": 71.0,
+          "latitude": 28.7041,
+          "longitude": 77.1025
+        },
+        {
+          "city": "Faisalabad",
+          "country": "Pakistan",
+          "avg_value": 70.1,
+          "latitude": 31.4504,
+          "longitude": 73.135
+        }
+      ],
+      "source": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "ai_strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours",
+        "Deploy anomaly detection on VOC sensors for early leak identification",
+        "AI urban planning tools to optimize green cover for ozone absorption",
+        "Predictive models correlating weather + traffic + ozone for proactive response"
+      ],
+      "tech_stack": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    "CO": {
+      "top_cities": [
+        {
+          "city": "Lagos",
+          "country": "Nigeria",
+          "avg_value": 157.0,
+          "latitude": 6.5244,
+          "longitude": 3.3792
+        },
+        {
+          "city": "Accra",
+          "country": "Ghana",
+          "avg_value": 146.1,
+          "latitude": 5.6037,
+          "longitude": -0.187
+        },
+        {
+          "city": "Lima",
+          "country": "Peru",
+          "avg_value": 96.0,
+          "latitude": -12.0464,
+          "longitude": -77.0428
+        },
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 68.7,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 68.3,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 67.7,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 65.3,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 63.3,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Buenos Aires",
+          "country": "Argentina",
+          "avg_value": 47.0,
+          "latitude": -34.6037,
+          "longitude": -58.3816
+        },
+        {
+          "city": "Kanpur",
+          "country": "India",
+          "avg_value": 41.0,
+          "latitude": 26.4499,
+          "longitude": 80.3319
+        }
+      ],
+      "source": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "ai_strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators",
+        "Real-time CO hotspot mapping with IoT sensor fusion and edge AI",
+        "Predictive models for generator usage spikes during power outages",
+        "AI-based ventilation management for enclosed urban corridors"
+      ],
+      "tech_stack": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    "PM10": {
+      "top_cities": [
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 288.6,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 288.2,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 287.0,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 279.7,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 269.4,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Patna",
+          "country": "India",
+          "avg_value": 177.8,
+          "latitude": 25.6093,
+          "longitude": 85.1376
+        },
+        {
+          "city": "Lahore",
+          "country": "Pakistan",
+          "avg_value": 177.7,
+          "latitude": 31.5204,
+          "longitude": 74.3587
+        },
+        {
+          "city": "Faisalabad",
+          "country": "Pakistan",
+          "avg_value": 175.5,
+          "latitude": 31.4504,
+          "longitude": 73.135
+        },
+        {
+          "city": "Kanpur",
+          "country": "India",
+          "avg_value": 172.5,
+          "latitude": 26.4499,
+          "longitude": 80.3319
+        },
+        {
+          "city": "Delhi",
+          "country": "India",
+          "avg_value": 171.7,
+          "latitude": 28.7041,
+          "longitude": 77.1025
+        }
+      ],
+      "source": "Road dust, construction, mining, agricultural activities, natural dust storms",
+      "ai_strategies": [
+        "AI-controlled road sweeping schedules based on dust prediction models",
+        "ML dust storm early warning using satellite and weather data fusion",
+        "Smart sprinkler systems triggered by real-time PM10 sensor readings",
+        "AI monitoring of mining and quarrying operations for compliance",
+        "Drone-based dust mapping for construction site management",
+        "Predictive models for agricultural dust events during harvest season"
+      ],
+      "tech_stack": "Satellite dust tracking, drone surveying, IoT sprinkler automation"
+    },
+    "SO2": {
+      "top_cities": [
+        {
+          "city": "Bhiwadi",
+          "country": "India",
+          "avg_value": 33.2,
+          "latitude": 28.2096,
+          "longitude": 76.861
+        },
+        {
+          "city": "Hotan",
+          "country": "China",
+          "avg_value": 31.9,
+          "latitude": 37.11,
+          "longitude": 79.93
+        },
+        {
+          "city": "Muzaffarnagar",
+          "country": "India",
+          "avg_value": 31.5,
+          "latitude": 29.4727,
+          "longitude": 77.7085
+        },
+        {
+          "city": "Ghaziabad",
+          "country": "India",
+          "avg_value": 31.4,
+          "latitude": 28.6692,
+          "longitude": 77.4538
+        },
+        {
+          "city": "Noida",
+          "country": "India",
+          "avg_value": 29.9,
+          "latitude": 28.5355,
+          "longitude": 77.391
+        },
+        {
+          "city": "Patna",
+          "country": "India",
+          "avg_value": 20.2,
+          "latitude": 25.6093,
+          "longitude": 85.1376
+        },
+        {
+          "city": "Delhi",
+          "country": "India",
+          "avg_value": 20.1,
+          "latitude": 28.7041,
+          "longitude": 77.1025
+        },
+        {
+          "city": "Lahore",
+          "country": "Pakistan",
+          "avg_value": 19.8,
+          "latitude": 31.5204,
+          "longitude": 74.3587
+        },
+        {
+          "city": "Dhaka",
+          "country": "Bangladesh",
+          "avg_value": 19.3,
+          "latitude": 23.8103,
+          "longitude": 90.4125
+        },
+        {
+          "city": "Faisalabad",
+          "country": "Pakistan",
+          "avg_value": 19.3,
+          "latitude": 31.4504,
+          "longitude": 73.135
+        }
+      ],
+      "source": "Coal-burning power plants, oil refineries, smelting, volcanic activity",
+      "ai_strategies": [
+        "AI optimization of flue gas desulfurization (FGD) systems",
+        "ML-based coal quality prediction to minimize sulfur content selection",
+        "Real-time refinery emission monitoring with AI anomaly detection",
+        "Predictive maintenance for scrubber systems to prevent SO2 leaks",
+        "AI energy mix optimization to phase out high-sulfur fuel sources",
+        "Smart cap-and-trade systems using ML for emission credit pricing"
+      ],
+      "tech_stack": "Process optimization AI, predictive maintenance, energy transition models"
+    }
+  },
+  "ai_control_database": {
+    "PM2.5": {
+      "source": "Vehicle exhausts, industrial emissions, crop burning, construction dust",
+      "strategies": [
+        "Deploy AI-optimized traffic management to reduce congestion hotspots",
+        "Install smart air purification towers at high-density intersections",
+        "Use satellite + ML to detect and prevent crop burning events in real-time",
+        "Implement IoT dust suppression systems on construction sites",
+        "AI-powered emission monitoring for industrial zones with auto-alerts",
+        "Deploy predictive models to issue early warnings 48hrs before PM2.5 spikes"
+      ],
+      "tech": "Random Forest + LSTM forecasting, satellite imagery CNNs, IoT sensor networks"
+    },
+    "NO2": {
+      "source": "Vehicle engines (diesel), power plants, industrial boilers",
+      "strategies": [
+        "AI traffic signal optimization to minimize idling and stop-go emissions",
+        "ML-based fleet electrification planning for public transport routes",
+        "Smart congestion pricing using real-time pollution sensors",
+        "Predictive maintenance alerts for industrial emission control equipment",
+        "AI route optimization for delivery vehicles to cut diesel NOx output",
+        "Deploy neural network models to identify illegal emission vehicles"
+      ],
+      "tech": "Reinforcement learning for traffic, computer vision for enforcement, time-series forecasting"
+    },
+    "Ozone": {
+      "source": "Secondary pollutant formed from NOx + VOCs under sunlight",
+      "strategies": [
+        "AI-based VOC emission tracking from industrial and commercial sources",
+        "ML models to predict ozone formation windows and issue advisories",
+        "Smart scheduling of industrial activities to avoid peak sunlight hours",
+        "Deploy anomaly detection on VOC sensors for early leak identification",
+        "AI urban planning tools to optimize green cover for ozone absorption",
+        "Predictive models correlating weather + traffic + ozone for proactive response"
+      ],
+      "tech": "Chemical transport models + ML, anomaly detection, weather-coupled forecasting"
+    },
+    "CO": {
+      "source": "Incomplete combustion — vehicles, generators, cooking stoves, wildfires",
+      "strategies": [
+        "AI-powered wildfire detection using satellite and drone imagery",
+        "ML-optimized clean cooking stove distribution in underserved areas",
+        "Smart grid management to reduce reliance on diesel generators",
+        "Real-time CO hotspot mapping with IoT sensor fusion and edge AI",
+        "Predictive models for generator usage spikes during power outages",
+        "AI-based ventilation management for enclosed urban corridors"
+      ],
+      "tech": "YOLOv8 fire detection, IoT edge computing, smart grid optimization"
+    },
+    "PM10": {
+      "source": "Road dust, construction, mining, agricultural activities, natural dust storms",
+      "strategies": [
+        "AI-controlled road sweeping schedules based on dust prediction models",
+        "ML dust storm early warning using satellite and weather data fusion",
+        "Smart sprinkler systems triggered by real-time PM10 sensor readings",
+        "AI monitoring of mining and quarrying operations for compliance",
+        "Drone-based dust mapping for construction site management",
+        "Predictive models for agricultural dust events during harvest season"
+      ],
+      "tech": "Satellite dust tracking, drone surveying, IoT sprinkler automation"
+    },
+    "SO2": {
+      "source": "Coal-burning power plants, oil refineries, smelting, volcanic activity",
+      "strategies": [
+        "AI optimization of flue gas desulfurization (FGD) systems",
+        "ML-based coal quality prediction to minimize sulfur content selection",
+        "Real-time refinery emission monitoring with AI anomaly detection",
+        "Predictive maintenance for scrubber systems to prevent SO2 leaks",
+        "AI energy mix optimization to phase out high-sulfur fuel sources",
+        "Smart cap-and-trade systems using ML for emission credit pricing"
+      ],
+      "tech": "Process optimization AI, predictive maintenance, energy transition models"
+    }
+  }
+}

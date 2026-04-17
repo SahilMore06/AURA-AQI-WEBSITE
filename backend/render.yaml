@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: aura-ml-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn predict:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+    healthCheckPath: /
+    plan: free

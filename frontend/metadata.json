@@ -1,0 +1,5 @@
+{
+  "name": "AURA Air Quality",
+  "description": "Air-quality Unified Response Application. Real-time air quality tracking with AI advisories.",
+  "requestFramePermissions": ["geolocation"]
+}

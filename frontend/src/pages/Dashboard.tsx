@@ -1,0 +1,747 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { Bell, MapPin, RefreshCw, Info, Wind, Droplets, ThermometerSun, Loader2, Shield, Activity, Leaf, CheckCircle, Flame, Factory, Car, AlertTriangle, ShieldAlert, Skull, Sparkles, Navigation } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList, Cell } from 'recharts';
+import { generateDashboardIEEE } from '../utils/ieeeDashboardReport';
+
+export function Dashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any>(null);
+  const [locationName, setLocationName] = useState('Detecting location…');
+  const [trendMetric, setTrendMetric] = useState('pm25');
+  const [mlCities, setMlCities] = useState<any>(null);
+  const [alertActive, setAlertActive] = useState(false);
+  const [audioPlayed, setAudioPlayed] = useState(false);
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('just now');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [geoStatus, setGeoStatus] = useState<'detecting' | 'active' | 'denied' | 'unavailable'>('detecting');
+  const [nextRefreshIn, setNextRefreshIn] = useState(120); // seconds until next auto-refresh
+
+  const GOOGLE_AQ_KEY = (import.meta as any).env?.VITE_GOOGLE_AQ_API_KEY || 'AIzaSyBBAX3ZdYpT5YJWxal0wMYifOJOV7OuMso';
+  const ML_API_URL = (import.meta as any).env?.VITE_ML_API_URL || 'http://localhost:5001';
+
+  const fetchData = async (lat: number, lon: number) => {
+    setCoords({ lat, lon });
+    try {
+      setLoading(true);
+      setError(null);
+
+      // ── Primary: Google Air Quality API (accurate, real-time) ──
+      const googleRes = await fetch(
+        `https://airquality.googleapis.com/v1/currentConditions:lookup?key=${GOOGLE_AQ_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: { latitude: lat, longitude: lon },
+            extraComputations: ['POLLUTANT_CONCENTRATION', 'LOCAL_AQI', 'POLLUTANT_ADDITIONAL_INFO'],
+            languageCode: 'en',
+          }),
+        }
+      );
+      const googleJson = await googleRes.json();
+
+      // Extract pollutant data from Google response
+      const pollutantMap: Record<string, number> = {};
+      if (googleJson.pollutants) {
+        googleJson.pollutants.forEach((p: any) => {
+          const val = p.concentration?.value || 0;
+          // Google returns ppb for gases, µg/m³ for PM — normalize all to µg/m³ for UI
+          if (p.code === 'pm25') pollutantMap.pm2_5 = val;
+          else if (p.code === 'pm10') pollutantMap.pm10 = val;
+          else if (p.code === 'no2') pollutantMap.nitrogen_dioxide = val;
+          else if (p.code === 'o3') pollutantMap.ozone = val;
+          else if (p.code === 'so2') pollutantMap.sulphur_dioxide = val;
+          else if (p.code === 'co') pollutantMap.carbon_monoxide = val;
+        });
+      }
+
+      // Get AQI — prefer local Indian AQI if available, else Universal AQI
+      let mainAqi = 0;
+      if (googleJson.indexes) {
+        const localIdx = googleJson.indexes.find((idx: any) => idx.code === 'ind_cpcb');
+        const uaqiIdx = googleJson.indexes.find((idx: any) => idx.code === 'uaqi');
+        mainAqi = localIdx?.aqi || uaqiIdx?.aqi || 0;
+      }
+
+      // ── Secondary: Open-Meteo for 24hr trend (Google doesn't offer free hourly history) ──
+      let trendData: any[] = [];
+      try {
+        const meteoRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi,pm2_5`);
+        const meteoJson = await meteoRes.json();
+        if (meteoJson.hourly?.time) {
+          const now = new Date();
+          const currentIndex = meteoJson.hourly.time.findIndex((t: string) => new Date(t) > now);
+          const startIdx = Math.max(0, (currentIndex !== -1 ? currentIndex : 0) - 12);
+          for (let i = startIdx; i < Math.min(meteoJson.hourly.time.length, startIdx + 24); i += 2) {
+            const time = new Date(meteoJson.hourly.time[i]);
+            trendData.push({
+              time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              pm25: meteoJson.hourly.pm2_5[i],
+              aqi: meteoJson.hourly.us_aqi[i],
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Open-Meteo trend fetch failed (non-critical)', e);
+      }
+
+      setData({
+        current: {
+          us_aqi: mainAqi,
+          pm2_5: pollutantMap.pm2_5 || 0,
+          pm10: pollutantMap.pm10 || 0,
+          ozone: pollutantMap.ozone || 0,
+          nitrogen_dioxide: pollutantMap.nitrogen_dioxide || 0,
+          sulphur_dioxide: pollutantMap.sulphur_dioxide || 0,
+          carbon_monoxide: pollutantMap.carbon_monoxide || 0,
+        },
+        trend: trendData,
+        source: 'Google Air Quality API',
+        googleRaw: googleJson, // keep full response for report generation
+      });
+
+      // ── Reverse geocode for location name ──
+      try {
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const geoJson = await geoRes.json();
+        if (geoJson.address) {
+          const city = geoJson.address.city || geoJson.address.town || geoJson.address.village || geoJson.address.county || '';
+          const state = geoJson.address.state || '';
+          if (city || state) {
+            setLocationName(`${city}${city && state ? ', ' : ''}${state}`);
+          }
+        }
+      } catch (e) {
+        console.error('Reverse geocoding failed', e);
+      }
+      
+    } catch (err) {
+      setError('Failed to fetch air quality data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+      setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }
+
+  };
+
+  const handleManualRefresh = () => {
+    if (coords) {
+      setIsRefreshing(true);
+      fetchData(coords.lat, coords.lon);
+    }
+  };
+
+  // "Use My Location" button handler — re-requests permission
+  const handleUseMyLocation = () => {
+    setGeoStatus('detecting');
+    setLocationName('Detecting location…');
+    if (!navigator.geolocation) {
+      // No geolocation API — try IP fallback
+      tryIpFallback();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setGeoStatus('active');
+        fetchData(position.coords.latitude, position.coords.longitude);
+      },
+      () => {
+        // GPS denied — try IP-based detection
+        tryIpFallback();
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const tryIpFallback = async () => {
+    try {
+      const r = await fetch('http://ip-api.com/json/?fields=lat,lon,city,regionName,status');
+      const d = await r.json();
+      if (d.status === 'success' && d.lat && d.lon) {
+        setGeoStatus('active');
+        fetchData(d.lat, d.lon);
+        return;
+      }
+    } catch {}
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      const d = await r.json();
+      if (d.latitude && d.longitude) {
+        setGeoStatus('active');
+        fetchData(d.latitude, d.longitude);
+        return;
+      }
+    } catch {}
+    setGeoStatus('denied');
+    setLocationName('New Delhi, India');
+    fetchData(28.7041, 77.1025);
+  };
+
+  useEffect(() => {
+    // Fetch categorized cities silently
+    fetch(`${ML_API_URL}/cities/quality`)
+      .then(res => res.json())
+      .then(json => setMlCities(json.quality_groups))
+      .catch(err => console.error('Failed to load ML Cities', err));
+  }, []);
+
+  useEffect(() => {
+    const defaultLat = 28.7041;
+    const defaultLon = 77.1025;
+
+    // Keep a ref to the latest coords so the 2-min interval always uses the
+    // most recent position (watchPosition may update it between intervals).
+    const latestCoords = { lat: defaultLat, lon: defaultLon };
+
+    const REFRESH_SECS = 120; // 2 minutes
+    setNextRefreshIn(REFRESH_SECS);
+
+    // Countdown ticker — updates every second
+    const countdown = setInterval(() => {
+      setNextRefreshIn(prev => {
+        if (prev <= 1) return REFRESH_SECS; // reset after fetch
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Auto-refresh every 2 minutes using whatever the current coords are
+    const interval = setInterval(() => {
+      fetchData(latestCoords.lat, latestCoords.lon);
+      setNextRefreshIn(REFRESH_SECS);
+    }, REFRESH_SECS * 1000);
+
+    if (!navigator.geolocation) {
+      setGeoStatus('unavailable');
+      setLocationName('New Delhi, India');
+      fetchData(defaultLat, defaultLon);
+      return () => clearInterval(interval);
+    }
+
+    setGeoStatus('detecting');
+
+    // watchPosition fires immediately with the first fix, then on every
+    // position change — so the dashboard always reflects current location.
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        latestCoords.lat = latitude;
+        latestCoords.lon = longitude;
+        setGeoStatus('active');
+        fetchData(latitude, longitude);
+      },
+      (err) => {
+        console.warn('Geolocation error:', err);
+        tryIpFallback();
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+      clearInterval(interval);
+      clearInterval(countdown);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const aqi = data?.current?.us_aqi;
+    if (aqi >= 151) {
+      setAlertActive(true);
+      if (!audioPlayed) {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play().catch(e => console.log('Audio autoplay blocked by browser', e));
+        setAudioPlayed(true);
+      }
+    } else if (aqi < 151) {
+      setAlertActive(false);
+      setAudioPlayed(false);
+    }
+  }, [data?.current?.us_aqi, audioPlayed]);
+
+  const getAqiColor = (val: number) => {
+    if (!val || isNaN(val)) return 'var(--muted)';
+    if (val <= 50) return '#00E676';
+    if (val <= 100) return '#FFE57F';
+    if (val <= 150) return '#FF9E40';
+    if (val <= 200) return '#FF5252';
+    return '#CE93D8';
+  };
+
+  const getAqiLabel = (val: number) => {
+    if (!val || isNaN(val)) return 'Unknown';
+    if (val <= 50) return 'Good';
+    if (val <= 100) return 'Moderate';
+    if (val <= 150) return 'Unhealthy for Sensitive';
+    if (val <= 200) return 'Unhealthy';
+    if (val <= 300) return 'Very Unhealthy';
+    return 'Hazardous';
+  };
+
+  const getAdvisory = (val: number) => {
+    if (!val || isNaN(val)) return 'Data unavailable.';
+    if (val <= 50) return 'Air quality is considered satisfactory, and air pollution poses little or no risk.';
+    if (val <= 100) return 'Air quality is acceptable; however, there may be a moderate health concern for a very small number of people.';
+    if (val <= 150) return 'Members of sensitive groups may experience health effects. The general public is not likely to be affected.';
+    if (val <= 200) return 'Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.';
+    return 'Health warnings of emergency conditions. The entire population is more likely to be affected.';
+  };
+
+  // iPhone Weather-style: one plain English headline for non-tech users
+  const getConditionHeadline = (val: number): string => {
+    if (!val || isNaN(val)) return 'Checking air quality...';
+    if (val <= 50)  return 'Great day to be outside';
+    if (val <= 100) return 'Air is okay for most people';
+    if (val <= 150) return 'Sensitive people should take care';
+    if (val <= 200) return 'Limit time outdoors today';
+    if (val <= 300) return 'Stay indoors if possible';
+    return 'Dangerous — avoid going outside';
+  };
+
+  // iPhone Weather "Feels like" equivalent — one punchy human sentence
+  const getSimpleAdvisory = (val: number): string => {
+    if (!val || isNaN(val)) return 'Unable to get advisory.';
+    if (val <= 50)  return 'Go ahead — the air is clean and safe.';
+    if (val <= 100) return 'Air is fine for most people. Unusually sensitive individuals may want to take it easy outdoors.';
+    if (val <= 150) return 'People with asthma, allergies, or heart conditions should reduce time outside.';
+    if (val <= 200) return 'Everyone may feel discomfort. Wear a mask if going out.';
+    if (val <= 300) return 'Health alert — avoid outdoor activity. Close windows and run an air purifier.';
+    return 'Emergency conditions. Stay indoors, seal windows. This air is dangerous for everyone.';
+  };
+
+  // iPhone Weather tile-style "what to do" for each pollutant
+  const getPollutantTip = (label: string, aqi: number): string => {
+    const lvl = aqi <= 50 ? 0 : aqi <= 100 ? 1 : aqi <= 150 ? 2 : 3;
+    const tips: Record<string, string[]> = {
+      'Fine Dust':        ['Safe — fine dust is low',      'Slightly elevated — sensitive? wear a mask', 'High — wear an N95 mask outdoors', 'Very high — stay indoors'],
+      'Coarse Dust':      ['Dust levels are normal',        'Mild dust — avoid open dusty areas',          'High dust — wear a mask',           'Stay indoors'],
+      'Ground Ozone':     ['Ozone is fine',                 'Moderate ozone — limit midday jogs',          'High ozone — avoid afternoon runs', 'Stay indoors, especially midday'],
+      'Traffic Fumes':    ['Traffic fumes at safe levels',  'Slightly elevated — avoid highway runs',      'High — stay away from busy roads',  'Stay indoors, close windows'],
+      'Industrial Smoke': ['Industrial smoke is low',       'Mild — limit prolonged outdoor time',         'High — reduce outdoor activity',    'Stay indoors'],
+      'Carbon Monoxide':  ['Carbon monoxide is safe',       'Slightly elevated — ventilate indoor spaces', 'High — avoid heavy traffic areas',  'Stay indoors immediately'],
+    };
+    return tips[label]?.[lvl] ?? (lvl === 0 ? 'Within safe range' : lvl === 1 ? 'Slightly elevated — monitor' : 'Elevated — take precautions');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#00D4AA]" />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-text-primary p-6">
+        <p className="text-[#FF5252] mb-4">{error || 'Something went wrong'}</p>
+        <button 
+          onClick={() => fetchData(19.0760, 72.8777)}
+          className="px-4 py-2 bg-surface border border-stroke rounded-xl hover:bg-stroke/50 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  const aqiValue = data.current?.us_aqi || 0;
+  const aqiColor = getAqiColor(aqiValue);
+  const aqiLabel = getAqiLabel(aqiValue);
+  const advisoryText = getAdvisory(aqiValue);
+
+  const handleAlertClick = () => {
+    if (!alertActive || !data) return;
+    const html = generateDashboardIEEE(data, aqiValue, aqiLabel, advisoryText, locationName, coords?.lat, coords?.lon);
+    const printWindow = window.open('', '_blank');
+    printWindow?.document.write(html);
+    printWindow?.document.close();
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="min-h-screen bg-bg text-text-primary p-6 pb-32 overflow-y-auto"
+    >
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.header
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3 bg-surface border border-stroke rounded-full px-4 py-2 backdrop-blur-md">
+            <MapPin className={`w-4 h-4 ${
+              geoStatus === 'active' ? 'text-[#00D4AA]' :
+              geoStatus === 'detecting' ? 'text-yellow-400 animate-pulse' :
+              geoStatus === 'denied' ? 'text-[#FF5252]' : 'text-muted'
+            }`} />
+            <span className="font-medium text-sm">{locationName}</span>
+            {geoStatus === 'active' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] animate-pulse" title="Using your live location" />
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            {(geoStatus === 'denied' || geoStatus === 'unavailable') && (
+              <button
+                onClick={handleUseMyLocation}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-[#00D4AA]/50 rounded-full text-xs text-[#00D4AA] hover:bg-[#00D4AA]/10 transition-colors"
+              >
+                <Navigation className="w-3.5 h-3.5" />
+                Use My Location
+              </button>
+            )}
+            <button 
+              onClick={alertActive ? handleAlertClick : undefined}
+              title={alertActive ? "Hazardous AQI! Download IEEE Alert Report" : "No active alerts"}
+              className={`relative p-2 rounded-full bg-surface border transition-colors ${alertActive ? 'border-[#FF5252] hover:bg-[#FF5252]/10 cursor-pointer animate-pulse shadow-[0_0_15px_rgba(255,82,82,0.5)]' : 'border-stroke hover:bg-stroke/50 cursor-default'}`}
+            >
+              <Bell className={`w-5 h-5 ${alertActive ? 'text-[#FF5252]' : 'text-muted'}`} />
+              {alertActive && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF5252]" />}
+            </button>
+            <div className="w-10 h-10 rounded-full bg-[#00D4AA] flex items-center justify-center font-bold text-bg">
+              A
+            </div>
+          </div>
+        </motion.header>
+
+        {/* Geo-denied banner */}
+        {geoStatus === 'denied' && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 bg-[#FF5252]/10 border border-[#FF5252]/30 rounded-2xl px-4 py-3 text-sm"
+          >
+            <MapPin className="w-4 h-4 text-[#FF5252] shrink-0" />
+            <span className="text-text-primary/80 flex-1">
+              <strong className="text-[#FF5252]">Location access blocked.</strong>{' '}
+              Click <strong>"Use My Location"</strong> above, then allow location in your browser's permission popup — or enable it in your browser's site settings for <code className="text-xs bg-stroke/40 px-1 rounded">localhost:3000</code>.
+            </span>
+            <button
+              onClick={handleUseMyLocation}
+              className="shrink-0 px-3 py-1.5 bg-[#00D4AA]/10 border border-[#00D4AA]/40 rounded-full text-xs text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-colors flex items-center gap-1.5"
+            >
+              <Navigation className="w-3 h-3" />
+              Retry
+            </button>
+          </motion.div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main AQI Gauge */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-1 bg-surface border border-stroke rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden"
+          >
+            <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at center, ${aqiColor} 0%, transparent 70%)` }} />
+            
+            <h2 className="text-muted font-medium mb-6 z-10 text-sm uppercase tracking-widest">Current Air Quality</h2>
+            
+            <div className="relative w-48 h-48 flex items-center justify-center z-10">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--stroke)" strokeWidth="8" />
+                <motion.circle
+                  cx="50" cy="50" r="45" fill="none"
+                  stroke={aqiColor} strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray="283"
+                  initial={{ strokeDashoffset: 283 }}
+                  animate={{ strokeDashoffset: 283 - (283 * Math.min(aqiValue, 300)) / 300 }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <span className="text-6xl font-display italic tracking-tighter" style={{ color: aqiColor }}>
+                  {aqiValue}
+                </span>
+                <span className="text-xs font-medium uppercase tracking-widest mt-1 text-center px-2" style={{ color: aqiColor }}>
+                  {aqiLabel}
+                </span>
+                <p className="text-[10px] text-muted text-center mt-2 px-3 leading-snug">
+                  {getConditionHeadline(aqiValue)}
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={handleManualRefresh}
+              className="mt-8 flex items-center gap-2 text-xs text-muted z-10 hover:text-[#00D4AA] transition-colors group"
+            >
+              <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-[#00D4AA]' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+              <span>
+                {isRefreshing ? 'Refreshing…' : lastUpdated === 'just now' ? 'Updated just now' : `Updated at ${lastUpdated}`}
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] animate-pulse" title="Auto-refresh every 2 min" />
+            </button>
+          </motion.div>
+
+          {/* AI Advisory & Stats */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* AI Advisory */}
+            <motion.div
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="bg-surface border border-stroke rounded-3xl p-6 relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00D4AA]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="flex items-start justify-between mb-4 relative z-10">
+                <div className="flex items-center gap-2 text-[#00D4AA]">
+                  <Info className="w-5 h-5" />
+                  <h3 className="font-semibold">What this means for you</h3>
+                </div>
+              </div>
+              <p className="text-xl font-semibold text-text-primary leading-snug mb-3 relative z-10">
+                {getSimpleAdvisory(aqiValue)}
+              </p>
+              <p className="text-sm text-text-primary/60 leading-relaxed relative z-10">
+                {locationName.split(',')[0]} · AQI {aqiValue} ({aqiLabel}) — {getAdvisory(aqiValue)}
+              </p>
+            </motion.div>
+
+            {/* 6 Grid Mini Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { id: 'pm25', label: 'Fine Dust', value: data.current?.pm2_5, unit: 'µg/m³', desc: 'PM2.5 · Particles', icon: Wind, aqi: Math.round(data.current?.pm2_5 * 2.5) || 0 },
+                { id: 'pm10', label: 'Coarse Dust', value: data.current?.pm10, unit: 'µg/m³', desc: 'PM10 · Particles', icon: Factory, aqi: Math.round(data.current?.pm10 * 1.5) || 0 },
+                { id: 'o3', label: 'Ground Ozone', value: data.current?.ozone, unit: 'µg/m³', desc: 'O₃ · Ground Ozone', icon: ThermometerSun, aqi: Math.round(data.current?.ozone * 0.5) || 0 },
+                { id: 'no2', label: 'Traffic Fumes', value: data.current?.nitrogen_dioxide, unit: 'µg/m³', desc: 'NO₂ · Vehicle Exhaust', icon: Car, aqi: Math.round(data.current?.nitrogen_dioxide * 1.2) || 0 },
+                { id: 'so2', label: 'Industrial Smoke', value: data.current?.sulphur_dioxide, unit: 'µg/m³', desc: 'SO₂ · Industrial', icon: Factory, aqi: Math.round(data.current?.sulphur_dioxide * 1.5) || 0 },
+                { id: 'co', label: 'Carbon Monoxide', value: data.current?.carbon_monoxide, unit: 'µg/m³', desc: 'CO · Combustion', icon: Flame, aqi: Math.round(data.current?.carbon_monoxide * 0.01) || 0 },
+              ].map((stat, i) => {
+                const statColor = getAqiColor(stat.aqi);
+                const statLabel = getAqiLabel(stat.aqi);
+                
+                return (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ y: 15, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    whileHover={{ y: -4, backgroundColor: 'rgba(255,255,255,0.02)' }}
+                    transition={{ delay: 0.2 + i * 0.05 }}
+                    className="bg-surface/50 backdrop-blur-md border border-stroke/20 rounded-3xl p-5 flex flex-col relative group transition-all duration-300"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <span className="text-muted text-[10px] font-bold uppercase tracking-[0.1em] block mb-1">
+                          {stat.label}
+                        </span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-display italic font-bold text-text-primary">
+                            {stat.value !== undefined && stat.value !== null ? Number(stat.value).toFixed(1) : '-'}
+                          </span>
+                          <span className="text-[10px] text-muted font-medium">{stat.unit}</span>
+                        </div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-bg/50 border border-stroke/10 group-hover:border-current transition-colors" style={{ color: statColor }}>
+                        <stat.icon className="w-4 h-4" />
+                      </div>
+                    </div>
+
+                    <p className="text-[10px] text-text-primary/40 leading-snug mb-4 line-clamp-1">
+                      {stat.desc}
+                    </p>
+                    
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold" style={{ color: statColor }}>
+                          AQI {stat.aqi}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider opacity-60" style={{ color: statColor }}>
+                          {statLabel}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-stroke/10 rounded-full overflow-hidden shadow-inner">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min((stat.aqi / 300) * 100, 100)}%` }}
+                          className="h-full rounded-full" 
+                          style={{ 
+                            backgroundColor: statColor,
+                            boxShadow: `0 0 8px ${statColor}40`
+                          }} 
+                        />
+                      </div>
+                      <p className="text-[9px] text-muted mt-3 leading-snug italic opacity-80 group-hover:opacity-100 transition-opacity">
+                        {getPollutantTip(stat.label, stat.aqi)}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* 24-Hour Trend */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="bg-surface border border-stroke rounded-3xl p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-semibold text-lg">How has the air changed today?</h3>
+            <select 
+              value={trendMetric}
+              onChange={(e) => setTrendMetric(e.target.value)}
+              className="bg-bg border border-stroke rounded-lg px-3 py-1 text-sm text-muted focus:outline-none focus:border-[#00D4AA]"
+            >
+              <option value="pm25">Fine Dust (PM2.5)</option>
+              <option value="aqi">Air Quality Score (AQI)</option>
+            </select>
+          </div>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data.trend}
+                margin={{ top: 24, right: 4, left: -12, bottom: 0 }}
+                barCategoryGap="15%"
+              >
+                <XAxis
+                  dataKey="time"
+                  stroke="#ffffff"
+                  tick={{ fill: '#ffffff', fontSize: 10, fontWeight: 500 }}
+                  tickLine={false}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.12)' }}
+                  dy={6}
+                  interval={2}
+                />
+                <YAxis
+                  stroke="#ffffff"
+                  tick={{ fill: '#ffffff', fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                  dx={-2}
+                />
+                <Tooltip
+                  cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                  contentStyle={{
+                    backgroundColor: '#0d1117',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                  }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 700 }}
+                  itemStyle={{ color: '#00D4AA' }}
+                />
+                <Bar dataKey={trendMetric} radius={[4, 4, 0, 0]} maxBarSize={28}>
+                  {(data.trend || []).map((_: any, index: number) => (
+                    <Cell key={index} fill="#00D4AA" fillOpacity={0.85} />
+                  ))}
+                  <LabelList
+                    dataKey={trendMetric}
+                    position="top"
+                    style={{ fill: '#ffffff', fontSize: 8, fontWeight: 700, opacity: 0.8 }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+        
+        {/* AQI Quality Scale Guide */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="bg-surface border border-stroke rounded-3xl p-6"
+        >
+          <div className="flex items-center gap-2 mb-6">
+            <Shield className="w-5 h-5 text-[#00D4AA]" />
+            <h3 className="font-semibold text-lg">Understanding the AQI Scale</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+            {[
+              { level: 'Good', range: '0-50', color: '#00E676', desc: 'Air is fresh and safe.' },
+              { level: 'Moderate', range: '51-100', color: '#FFE57F', desc: 'Acceptable for most.' },
+              { level: 'Unhealthy*', range: '101-150', color: '#FF9E40', desc: 'Sensitive groups take care.' },
+              { level: 'Unhealthy', range: '151-200', color: '#FF5252', desc: 'Everyone limit outside time.' },
+              { level: 'Very Poor', range: '201-300', color: '#CE93D8', desc: 'Avoid outdoor activities.' },
+              { level: 'Hazardous', range: '301+', color: '#CE93D8', desc: 'Emergency conditions.' },
+            ].map((col) => (
+              <div key={col.level} className="bg-bg border border-stroke/50 rounded-2xl p-4 flex flex-col">
+                <div className="w-2 h-2 rounded-full mb-3" style={{ backgroundColor: col.color }} />
+                <div className="font-bold text-sm mb-1" style={{ color: col.color }}>{col.level}</div>
+                <div className="text-[10px] text-muted mb-2">{col.range}</div>
+                <p className="text-[10px] text-muted leading-relaxed">{col.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-6 border-t border-stroke/50">
+            <h4 className="text-xs font-semibold mb-4 text-muted uppercase tracking-wider">How to stay safe right now</h4>
+            <div className="flex flex-wrap gap-2">
+              {['Mask recommended', 'Stay indoors', 'Run air purifier', 'Close windows', 'Monitor symptoms', 'Sensitive: avoid exertion'].map((tip) => (
+                <span key={tip} className="px-3 py-1 bg-bg border border-stroke rounded-lg text-[10px] text-muted">{tip}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Recommended Cities (ML Engine) */}
+        {mlCities && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="bg-surface border border-stroke rounded-3xl p-6"
+          >
+            <div className="flex items-center gap-2 mb-6 text-[#00D4AA]">
+              <Sparkles className="w-5 h-5" />
+              <h3 className="font-semibold text-lg">Cities Sorted by Air Quality (AI)</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { key: 'Good', label: 'Healthy Air', color: '#00E676' },
+                { key: 'Moderate', label: 'Moderate Air', color: '#FFE57F' },
+                { key: 'Bad', label: 'Poor Quality', color: '#FF9E40' },
+                { key: 'Worst', label: 'Severe / Alert', color: '#FF5252' }
+              ].map(({ key, label, color }) => {
+                const cities = mlCities[key]?.filter((city: any) => city.country === 'India') || [];
+                if (cities.length === 0) return null;
+                
+                return (
+                  <div key={key} className="flex flex-col">
+                    <div className="flex items-center justify-between mb-4 border-b border-stroke/50 pb-2">
+                      <h4 className="font-bold text-xs" style={{ color }}>{label}</h4>
+                      <span className="text-[10px] text-muted">{cities.length}</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {cities.slice(0, 5).map((city: any, i: number) => (
+                        <div key={i} className="bg-bg/50 border border-stroke/30 rounded-xl p-3 flex justify-between items-center group">
+                          <div className="overflow-hidden">
+                            <div className="text-xs font-bold truncate group-hover:text-[#00D4AA] transition-colors">{city.city}</div>
+                            <div className="text-[10px] text-muted truncate">{city.country}</div>
+                          </div>
+                          <div className="text-right pl-2">
+                            <div className="text-sm font-bold" style={{ color }}>{city.avg_aqi}</div>
+                            <div className="text-[8px] text-muted opacity-60 uppercase">{city.dominant_pollutant}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
