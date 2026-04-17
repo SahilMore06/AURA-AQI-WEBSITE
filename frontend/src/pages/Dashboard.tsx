@@ -24,7 +24,7 @@ export function Dashboard() {
   const [geoStatus, setGeoStatus] = useState<'detecting' | 'active' | 'denied' | 'unavailable'>('detecting');
   const [nextRefreshIn, setNextRefreshIn] = useState(120);
 
-  const GOOGLE_AQ_KEY = (import.meta as any).env?.VITE_GOOGLE_AQ_API_KEY || 'AIzaSyBBAX3ZdYpT5YJWxal0wMYifOJOV7OuMso';
+  const GOOGLE_AQ_KEY = (import.meta as any).env?.VITE_GOOGLE_AQ_API_KEY;
   const ML_API_URL = (import.meta as any).env?.VITE_ML_API_URL || 'http://localhost:5001';
 
   // ── Save AQI reading to Supabase ──────────────────────────────────────────
@@ -220,7 +220,7 @@ export function Dashboard() {
 
   const tryIpFallback = async () => {
     try {
-      const r = await fetch('http://ip-api.com/json/?fields=lat,lon,city,regionName,status');
+      const r = await fetch('https://ip-api.com/json/?fields=lat,lon,city,regionName,status');
       const d = await r.json();
       if (d.status === 'success' && d.lat && d.lon) {
         setGeoStatus('active');
@@ -261,25 +261,41 @@ export function Dashboard() {
     const REFRESH_SECS = 120; // 2 minutes
     setNextRefreshIn(REFRESH_SECS);
 
-    // Countdown ticker — updates every second
+    // Countdown ticker — updates every second, pauses when tab is hidden
     const countdown = setInterval(() => {
+      if (document.hidden) return; // don't tick when tab is hidden
       setNextRefreshIn(prev => {
-        if (prev <= 1) return REFRESH_SECS; // reset after fetch
+        if (prev <= 1) return REFRESH_SECS;
         return prev - 1;
       });
     }, 1000);
 
-    // Auto-refresh every 2 minutes using whatever the current coords are
+    // Auto-refresh every 2 minutes — paused when tab is hidden to save API quota
     const interval = setInterval(() => {
-      fetchData(latestCoords.lat, latestCoords.lon);
-      setNextRefreshIn(REFRESH_SECS);
+      if (!document.hidden) {
+        fetchData(latestCoords.lat, latestCoords.lon);
+        setNextRefreshIn(REFRESH_SECS);
+      }
     }, REFRESH_SECS * 1000);
+
+    // Resume immediately when the tab becomes visible again
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        fetchData(latestCoords.lat, latestCoords.lon);
+        setNextRefreshIn(REFRESH_SECS);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     if (!navigator.geolocation) {
       setGeoStatus('unavailable');
       setLocationName('New Delhi, India');
       fetchData(defaultLat, defaultLon);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        clearInterval(countdown);
+        document.removeEventListener('visibilitychange', handleVisibility);
+      };
     }
 
     setGeoStatus('detecting');
@@ -305,6 +321,7 @@ export function Dashboard() {
       navigator.geolocation.clearWatch(watchId);
       clearInterval(interval);
       clearInterval(countdown);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 
@@ -401,7 +418,7 @@ export function Dashboard() {
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-text-primary p-6">
         <p className="text-[#FF5252] mb-4">{error || 'Something went wrong'}</p>
         <button 
-          onClick={() => fetchData(19.0760, 72.8777)}
+          onClick={() => coords ? fetchData(coords.lat, coords.lon) : fetchData(28.7041, 77.1025)}
           className="px-4 py-2 bg-surface border border-stroke rounded-xl hover:bg-stroke/50 transition-colors"
         >
           Try Again

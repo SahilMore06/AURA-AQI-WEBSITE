@@ -1,14 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
-import { Globe, Activity, MapPin, BarChart3, Settings2 } from 'lucide-react';
+import { Activity, MapPin, BarChart3, Settings2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const navItems = [
-  { id: 'home', icon: Globe, label: 'Home', path: '/' },
-  { id: 'dashboard', icon: Activity, label: 'Dashboard', path: '/dashboard' },
-  { id: 'map', icon: MapPin, label: 'Map', path: '/map' },
-  { id: 'analytics', icon: BarChart3, label: 'Analytics', path: '/analytics' },
-  { id: 'settings', icon: Settings2, label: 'Settings', path: '/settings' },
+  { id: 'dashboard', icon: Activity,  label: 'Dashboard', path: '/dashboard' },
+  { id: 'map',       icon: MapPin,    label: 'Map',        path: '/map' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics',  path: '/analytics' },
+  { id: 'settings',  icon: Settings2, label: 'Settings',   path: '/settings' },
 ];
 
 function DockItem({ item, mouseX, isActive, onClick }: any) {

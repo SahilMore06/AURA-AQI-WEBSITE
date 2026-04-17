@@ -8,6 +8,9 @@ services:
       - key: FLASK_ENV
         value: production
       - key: CORS_ORIGINS
+        # ⚠️  Override this in Render dashboard with your actual Vercel URL:
+        # e.g. https://your-app.vercel.app
+        # Using "*" is fine for development but should be locked down in production.
         value: "*"
       - key: PYTHON_VERSION
         value: "3.11.0"

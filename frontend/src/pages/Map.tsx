@@ -17,11 +17,11 @@ L.Icon.Default.mergeOptions({
 // AQI category helpers
 export const getAqiCategory = (val: number): { label: string; color: string } => {
   if (isNaN(val) || val === 0) return { label: 'Unknown', color: 'var(--muted)' };
-  if (val <= 50)  return { label: 'Good',           color: '#00E676' };
-  if (val <= 100) return { label: 'Moderate',       color: '#FFE57F' };
-  if (val <= 150) return { label: 'Unhealthy',      color: '#FF9E40' };
-  if (val <= 200) return { label: 'Unhealthy',      color: '#FF5252' };
-  if (val <= 300) return { label: 'Very Unhealthy', color: '#CE93D8' };
+  if (val <= 50)  return { label: 'Good',                         color: '#00E676' };
+  if (val <= 100) return { label: 'Moderate',                      color: '#FFE57F' };
+  if (val <= 150) return { label: 'Unhealthy for Sensitive Groups', color: '#FF9E40' };
+  if (val <= 200) return { label: 'Unhealthy',                     color: '#FF5252' };
+  if (val <= 300) return { label: 'Very Unhealthy',                color: '#CE93D8' };
   return { label: 'Hazardous', color: '#8B0000' };
 };
 
@@ -30,7 +30,7 @@ const getAqiLabel = (val: number): string => {
   if (isNaN(val) || val === 0) return 'Unknown';
   if (val <= 50)  return 'Good';
   if (val <= 100) return 'Moderate';
-  if (val <= 150) return 'Unhealthy';
+  if (val <= 150) return 'Unhealthy for Sensitive Groups';
   if (val <= 200) return 'Unhealthy';
   if (val <= 300) return 'Very Unhealthy';
   return 'Hazardous';
@@ -261,7 +261,7 @@ function getCityFilterCategory(aqi: number): FilterCategory {
   return 'Hazardous';
 }
 
-const GOOGLE_AQ_KEY = (import.meta.env.VITE_GOOGLE_AQ_API_KEY as string) || 'AIzaSyBBAX3ZdYpT5YJWxal0wMYifOJOV7OuMso';
+const GOOGLE_AQ_KEY = (import.meta.env.VITE_GOOGLE_AQ_API_KEY as string);
 const ML_API_URL = (import.meta.env.VITE_ML_API_URL as string) || 'http://localhost:5001';
 
 

@@ -27,6 +27,10 @@ export function Auth() {
         setSession(session);
         setUser(session.user);
         setLoading(false);
+        // Log OAuth sign-ins (email/password logins are logged separately in handleAuth)
+        if (event === 'SIGNED_IN' && session.user.app_metadata?.provider !== 'email') {
+          logEvent('oauth_sign_in', { provider: session.user.app_metadata?.provider }, '/auth');
+        }
         navigate('/dashboard');
       }
     });
