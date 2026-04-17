@@ -219,15 +219,22 @@ export function Dashboard() {
   };
 
   const tryIpFallback = async () => {
+    // Primary: ipwho.is — free, HTTPS, ~56ms, no rate-limit issues
     try {
-      const r = await fetch('https://ip-api.com/json/?fields=lat,lon,city,regionName,status');
+      const r = await fetch('https://ipwho.is/');
       const d = await r.json();
-      if (d.status === 'success' && d.lat && d.lon) {
+      if (d.success && d.latitude && d.longitude) {
         setGeoStatus('active');
-        fetchData(d.lat, d.lon);
+        if (d.city) {
+          const name = d.city + (d.region ? `, ${d.region}` : '');
+          setLocationName(name);
+          locationNameRef.current = name;
+        }
+        fetchData(d.latitude, d.longitude);
         return;
       }
     } catch {}
+    // Secondary: ipapi.co (may rate-limit on free tier)
     try {
       const r = await fetch('https://ipapi.co/json/');
       const d = await r.json();
@@ -237,6 +244,7 @@ export function Dashboard() {
         return;
       }
     } catch {}
+    // Hard fallback: New Delhi
     setGeoStatus('denied');
     setLocationName('New Delhi, India');
     fetchData(28.7041, 77.1025);
