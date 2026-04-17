@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Settings2, Bell, Moon, Sun, User, LogOut, Save, CheckCircle } from 'lucide-react';
+import { Settings2, Bell, User, LogOut, Save, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
-// ── Persist theme preference across sessions ──────────────────────────────────
-const THEME_KEY = 'aura-theme';
 const ALERT_KEY = 'aura-alert';
-
-function applyTheme(theme: string) {
-  document.documentElement.classList.toggle('light', theme === 'light');
-}
 
 export function Settings() {
   const navigate = useNavigate();
@@ -36,22 +30,6 @@ export function Settings() {
     return stored ? JSON.parse(stored).threshold : 100;
   });
   const [alertSaved, setAlertSaved] = useState(false);
-
-  // Theme state — persisted to localStorage and applied immediately
-  const [theme, setThemeState] = useState<string>(() => {
-    return localStorage.getItem(THEME_KEY) || 'dark';
-  });
-
-  // Apply theme on mount
-  useEffect(() => {
-    applyTheme(theme);
-  }, []);
-
-  const handleThemeChange = useCallback((newTheme: string) => {
-    setThemeState(newTheme);
-    localStorage.setItem(THEME_KEY, newTheme);
-    applyTheme(newTheme);
-  }, []);
 
   // Save alert prefs to localStorage whenever they change
   const handleSaveAlert = () => {
@@ -107,9 +85,6 @@ export function Settings() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    // Reset theme to dark on sign-out
-    applyTheme('dark');
-    localStorage.removeItem(THEME_KEY);
     navigate('/auth');
   };
 
@@ -163,7 +138,6 @@ export function Settings() {
             {[
               { icon: User, label: 'Profile' },
               { icon: Bell, label: 'Alerts' },
-              { icon: theme === 'light' ? Sun : Moon, label: 'Appearance' },
             ].map((item) => (
               <div
                 key={item.label}
@@ -333,49 +307,7 @@ export function Settings() {
               )}
             </section>
 
-            {/* ── Appearance ── */}
-            <section className="bg-surface border border-stroke rounded-3xl p-6">
-              <h2 className="text-xl font-display italic mb-2">Appearance</h2>
-              <p className="text-muted text-sm mb-5">Choose your preferred colour scheme. Changes apply instantly.</p>
 
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => handleThemeChange('light')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all duration-200 ${
-                    theme === 'light'
-                      ? 'border-[#00D4AA] bg-[#00D4AA]/10 scale-[1.02]'
-                      : 'border-stroke hover:border-muted'
-                  }`}
-                >
-                  <Sun className={`w-8 h-8 transition-colors ${theme === 'light' ? 'text-[#00D4AA]' : 'text-muted'}`} />
-                  <div className="text-center">
-                    <p className={`font-semibold ${theme === 'light' ? 'text-text-primary' : 'text-muted'}`}>Light Mode</p>
-                    <p className="text-xs text-muted mt-0.5">Bright & clean</p>
-                  </div>
-                  {theme === 'light' && (
-                    <div className="w-2 h-2 rounded-full bg-[#00D4AA]" />
-                  )}
-                </button>
-
-                <button
-                  onClick={() => handleThemeChange('dark')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all duration-200 ${
-                    theme === 'dark'
-                      ? 'border-[#00D4AA] bg-[#00D4AA]/10 scale-[1.02]'
-                      : 'border-stroke hover:border-muted'
-                  }`}
-                >
-                  <Moon className={`w-8 h-8 transition-colors ${theme === 'dark' ? 'text-[#00D4AA]' : 'text-muted'}`} />
-                  <div className="text-center">
-                    <p className={`font-semibold ${theme === 'dark' ? 'text-text-primary' : 'text-muted'}`}>Dark Mode</p>
-                    <p className="text-xs text-muted mt-0.5">Easy on the eyes</p>
-                  </div>
-                  {theme === 'dark' && (
-                    <div className="w-2 h-2 rounded-full bg-[#00D4AA]" />
-                  )}
-                </button>
-              </div>
-            </section>
           </motion.div>
         </div>
       </div>
