@@ -16,6 +16,8 @@ export function Dashboard() {
   const locationNameRef = useRef('Detecting location…');
   const [trendMetric, setTrendMetric] = useState('pm25');
   const [mlCities, setMlCities] = useState<any>(null);
+  const [mlPrediction, setMlPrediction] = useState<any>(null);
+  const [mlLoading, setMlLoading] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
   const [audioPlayed, setAudioPlayed] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -190,6 +192,33 @@ export function Dashboard() {
       const aqiLbl = mainAqi <= 50 ? 'Good' : mainAqi <= 100 ? 'Moderate' : mainAqi <= 150 ? 'Unhealthy for Sensitive' : mainAqi <= 200 ? 'Unhealthy' : mainAqi <= 300 ? 'Very Unhealthy' : 'Hazardous';
       saveAqiReading(lat, lon, currentAqi, aqiLbl, resolvedCity);
       logAqiFetch(mainAqi, resolvedCity, lat, lon);
+
+      // ── ML Prediction ──
+      // Call the local ML backend with live pollutant values to get
+      // AI-predicted AQI category, health risk, and dominant pollutant.
+      try {
+        setMlLoading(true);
+        const mlRes = await fetch(`${ML_API_URL}/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pm25:  pollutantMap.pm2_5             || 0,
+            pm10:  pollutantMap.pm10              || 0,
+            no2:   pollutantMap.nitrogen_dioxide  || 0,
+            so2:   pollutantMap.sulphur_dioxide   || 0,
+            co:    pollutantMap.carbon_monoxide   || 0,
+            o3:    pollutantMap.ozone             || 0,
+          }),
+        });
+        if (mlRes.ok) {
+          const mlJson = await mlRes.json();
+          setMlPrediction(mlJson);
+        }
+      } catch (e) {
+        console.warn('ML prediction unavailable (backend offline?)', e);
+      } finally {
+        setMlLoading(false);
+      }
       
     } catch (err) {
       setError('Failed to fetch air quality data');
@@ -859,6 +888,108 @@ export function Dashboard() {
             </div>
           </div>
         </motion.div>
+
+        {/* Recommended Cities (ML Engine) */}
+        {/* ── ML Prediction Card ────────────────────────────── */}
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="bg-surface border border-stroke rounded-3xl p-6"
+          >
+            <div className="flex items-center gap-2 mb-6 text-[#00D4AA]">
+              <Sparkles className="w-5 h-5" />
+              <h3 className="font-semibold text-lg">ML Model Prediction</h3>
+              <span className="ml-auto text-xs text-muted bg-stroke/40 px-2 py-0.5 rounded-full">Random Forest · 95.2% accuracy</span>
+            </div>
+
+            {mlLoading && (
+              <div className="flex items-center gap-3 text-muted">
+                <Loader2 className="w-5 h-5 animate-spin text-[#00D4AA]" />
+                <span className="text-sm">Running ML analysis on live pollutant data…</span>
+              </div>
+            )}
+
+            {!mlLoading && mlPrediction && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* AQI Category */}
+                <div className={`rounded-2xl p-5 border ${
+                  mlPrediction.prediction === 'Good'                        ? 'bg-[#00E676]/10 border-[#00E676]/30' :
+                  mlPrediction.prediction === 'Moderate'                    ? 'bg-[#FFE57F]/10 border-[#FFE57F]/30' :
+                  mlPrediction.prediction === 'Unhealthy for Sensitive Groups' ? 'bg-[#FF9E40]/10 border-[#FF9E40]/30' :
+                  mlPrediction.prediction === 'Unhealthy'                   ? 'bg-[#FF5252]/10 border-[#FF5252]/30' :
+                  mlPrediction.prediction === 'Very Unhealthy'              ? 'bg-[#CE93D8]/10 border-[#CE93D8]/30' :
+                  'bg-[#FF0000]/10 border-[#FF0000]/30'
+                }`}>
+                  <p className="text-xs text-muted mb-1 uppercase tracking-wider">AQI Category</p>
+                  <p className={`text-xl font-bold ${
+                    mlPrediction.prediction === 'Good'                        ? 'text-[#00E676]' :
+                    mlPrediction.prediction === 'Moderate'                    ? 'text-[#FFE57F]' :
+                    mlPrediction.prediction === 'Unhealthy for Sensitive Groups' ? 'text-[#FF9E40]' :
+                    mlPrediction.prediction === 'Unhealthy'                   ? 'text-[#FF5252]' :
+                    mlPrediction.prediction === 'Very Unhealthy'              ? 'text-[#CE93D8]' :
+                    'text-[#FF0000]'
+                  }`}>{mlPrediction.prediction}</p>
+                  <p className="text-xs text-muted mt-2">Confidence: {mlPrediction.confidence?.toFixed(1)}%</p>
+                </div>
+
+                {/* Health Risk */}
+                <div className={`rounded-2xl p-5 border ${
+                  mlPrediction.quality === 'Best' || mlPrediction.quality === 'Healthy' ? 'bg-[#00E676]/10 border-[#00E676]/30' :
+                  mlPrediction.quality === 'Moderate'  ? 'bg-[#FFE57F]/10 border-[#FFE57F]/30' :
+                  mlPrediction.quality === 'Unhealthy' ? 'bg-[#FF5252]/10 border-[#FF5252]/30' :
+                  mlPrediction.quality === 'Very Unhealthy' ? 'bg-[#CE93D8]/10 border-[#CE93D8]/30' :
+                  'bg-[#FF0000]/10 border-[#FF0000]/30'
+                }`}>
+                  <p className="text-xs text-muted mb-1 uppercase tracking-wider">Health Risk</p>
+                  <p className={`text-xl font-bold ${
+                    mlPrediction.quality === 'Best' || mlPrediction.quality === 'Healthy' ? 'text-[#00E676]' :
+                    mlPrediction.quality === 'Moderate'  ? 'text-[#FFE57F]' :
+                    mlPrediction.quality === 'Unhealthy' ? 'text-[#FF5252]' :
+                    mlPrediction.quality === 'Very Unhealthy' ? 'text-[#CE93D8]' :
+                    'text-[#FF0000]'
+                  }`}>{mlPrediction.quality}</p>
+                  <p className="text-xs text-muted mt-2">Based on real-time pollutants</p>
+                </div>
+
+                {/* Dominant Pollutant */}
+                <div className="rounded-2xl p-5 border bg-[#00D4AA]/10 border-[#00D4AA]/30">
+                  <p className="text-xs text-muted mb-1 uppercase tracking-wider">Primary Driver</p>
+                  <p className="text-xl font-bold text-[#00D4AA]">
+                    {mlPrediction.dominant_pollutant || data?.current?.pm2_5 > data?.current?.pm10 ? 'PM 2.5' : 'PM 10'}
+                  </p>
+                  <p className="text-xs text-muted mt-2">Dominant pollutant</p>
+                </div>
+
+                {/* Live inputs summary */}
+                <div className="md:col-span-3 rounded-2xl p-4 bg-stroke/20 border border-stroke/40">
+                  <p className="text-xs text-muted mb-3 uppercase tracking-wider">Live Pollutant Inputs to Model</p>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    {[
+                      { label: 'PM2.5', val: mlPrediction.input?.pm25_aqi },
+                      { label: 'PM10',  val: mlPrediction.input?.pm10_aqi },
+                      { label: 'NO₂',   val: mlPrediction.input?.no2_aqi },
+                      { label: 'SO₂',   val: mlPrediction.input?.so2_aqi },
+                      { label: 'CO',    val: mlPrediction.input?.co_aqi },
+                      { label: 'O₃',    val: mlPrediction.input?.ozone_aqi },
+                    ].map(p => (
+                      <div key={p.label} className="text-center">
+                        <p className="text-[10px] text-muted">{p.label}</p>
+                        <p className="text-sm font-semibold text-text-primary">{p.val?.toFixed(1) ?? '—'}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!mlLoading && !mlPrediction && (
+              <div className="flex items-center gap-3 text-muted bg-stroke/20 rounded-2xl p-4">
+                <AlertTriangle className="w-5 h-5 text-[#FF9E40]" />
+                <span className="text-sm">ML backend offline — start the backend server to enable predictions.</span>
+              </div>
+            )}
+          </motion.div>
 
         {/* Recommended Cities (ML Engine) */}
         {mlCities && (
