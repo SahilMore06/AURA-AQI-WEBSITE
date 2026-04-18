@@ -274,26 +274,20 @@ export function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const defaultLat = 19.0330; // Navi Mumbai
-    const defaultLon = 73.0297;
+    // ── NAVI MUMBAI DEFAULTS ──────────────────────────────────────────────────
+    const NAVI_MUMBAI = { lat: 19.0330, lon: 73.0297, name: 'Navi Mumbai, Maharashtra' };
 
-    // Keep a ref to the latest coords so the 2-min interval always uses the
-    // most recent position (watchPosition may update it between intervals).
-    const latestCoords = { lat: defaultLat, lon: defaultLon };
-
-    const REFRESH_SECS = 120; // 2 minutes
+    const latestCoords = { lat: NAVI_MUMBAI.lat, lon: NAVI_MUMBAI.lon };
+    const REFRESH_SECS = 120;
     setNextRefreshIn(REFRESH_SECS);
 
-    // Countdown ticker — updates every second, pauses when tab is hidden
+    // Countdown ticker
     const countdown = setInterval(() => {
-      if (document.hidden) return; // don't tick when tab is hidden
-      setNextRefreshIn(prev => {
-        if (prev <= 1) return REFRESH_SECS;
-        return prev - 1;
-      });
+      if (document.hidden) return;
+      setNextRefreshIn(prev => (prev <= 1 ? REFRESH_SECS : prev - 1));
     }, 1000);
 
-    // Auto-refresh every 2 minutes — paused when tab is hidden to save API quota
+    // Auto-refresh every 2 min
     const interval = setInterval(() => {
       if (!document.hidden) {
         fetchData(latestCoords.lat, latestCoords.lon);
@@ -301,8 +295,7 @@ export function Dashboard() {
       }
     }, REFRESH_SECS * 1000);
 
-    // Resume immediately when the tab becomes visible again,
-    // but only if it's been at least 60 seconds since the last fetch.
+    // Tab visibility refresh (throttled to 60s)
     const handleVisibility = () => {
       if (!document.hidden && Date.now() - lastFetchTime.current > 60_000) {
         fetchData(latestCoords.lat, latestCoords.lon);
@@ -311,38 +304,89 @@ export function Dashboard() {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    if (!navigator.geolocation) {
-      setGeoStatus('unavailable');
-      setLocationName('Navi Mumbai, Maharashtra');
-      fetchData(defaultLat, defaultLon);
-      return () => {
-        clearInterval(interval);
-        clearInterval(countdown);
-        document.removeEventListener('visibilitychange', handleVisibility);
-      };
-    }
+    // ── STEP 1: Load profile city from Supabase ───────────────────────────────
+    // This is the most reliable source — it's what the user set during signup.
+    const initLocation = async () => {
+      let profileCityLoaded = false;
 
-    setGeoStatus('detecting');
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('city')
+            .eq('id', user.id)
+            .single();
 
-    // watchPosition fires immediately with the first fix, then on every
-    // position change — so the dashboard always reflects current location.
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        latestCoords.lat = latitude;
-        latestCoords.lon = longitude;
+          if (profile?.city) {
+            // Geocode the saved city name → coordinates
+            const geocodeRes = await fetch(
+              `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(profile.city + ', India')}&limit=1`
+            );
+            const geocodeData = await geocodeRes.json();
+            if (geocodeData?.[0]?.lat && geocodeData?.[0]?.lon) {
+              const lat = parseFloat(geocodeData[0].lat);
+              const lon = parseFloat(geocodeData[0].lon);
+              latestCoords.lat = lat;
+              latestCoords.lon = lon;
+              setLocationName(profile.city);
+              locationNameRef.current = profile.city;
+              setGeoStatus('active');
+              await fetchData(lat, lon);
+              profileCityLoaded = true;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Profile city load failed:', e);
+      }
+
+      // If profile city couldn't be loaded, use Navi Mumbai default immediately
+      if (!profileCityLoaded) {
+        setLocationName(NAVI_MUMBAI.name);
+        locationNameRef.current = NAVI_MUMBAI.name;
         setGeoStatus('active');
-        fetchData(latitude, longitude);
-      },
-      (err) => {
-        console.warn('Geolocation error:', err);
-        tryIpFallback();
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+        await fetchData(NAVI_MUMBAI.lat, NAVI_MUMBAI.lon);
+      }
+
+      // ── STEP 2: Silently try GPS for higher precision ─────────────────────
+      // Only update if GPS succeeds — don't block initial load on this.
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            // Only switch to GPS if it's meaningfully different (>1km)
+            const dist = Math.hypot(latitude - latestCoords.lat, longitude - latestCoords.lon);
+            if (dist > 0.01) {
+              latestCoords.lat = latitude;
+              latestCoords.lon = longitude;
+              // Get city name from BigDataCloud
+              try {
+                const r = await fetch(
+                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+                );
+                const d = await r.json();
+                const city = d.city || d.locality || '';
+                const state = d.principalSubdivision || '';
+                if (city) {
+                  const name = `${city}${state ? ', ' + state : ''}`;
+                  setLocationName(name);
+                  locationNameRef.current = name;
+                }
+              } catch { /* keep profile city name */ }
+              setGeoStatus('active');
+              fetchData(latitude, longitude);
+            }
+          },
+          () => { /* GPS denied — already showing profile/default city */ },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+        );
+      }
+    };
+
+    initLocation();
 
     return () => {
-      navigator.geolocation.clearWatch(watchId);
       clearInterval(interval);
       clearInterval(countdown);
       document.removeEventListener('visibilitychange', handleVisibility);
