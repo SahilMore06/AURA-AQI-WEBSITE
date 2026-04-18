@@ -259,10 +259,10 @@ export function Dashboard() {
         return;
       }
     } catch {}
-    // Hard fallback: New Delhi
+    // Hard fallback: Navi Mumbai
     setGeoStatus('denied');
-    setLocationName('New Delhi, India');
-    fetchData(28.7041, 77.1025);
+    setLocationName('Navi Mumbai, Maharashtra');
+    fetchData(19.0330, 73.0297);
   };
 
   useEffect(() => {
@@ -274,8 +274,8 @@ export function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const defaultLat = 28.7041;
-    const defaultLon = 77.1025;
+    const defaultLat = 19.0330; // Navi Mumbai
+    const defaultLon = 73.0297;
 
     // Keep a ref to the latest coords so the 2-min interval always uses the
     // most recent position (watchPosition may update it between intervals).
@@ -313,7 +313,7 @@ export function Dashboard() {
 
     if (!navigator.geolocation) {
       setGeoStatus('unavailable');
-      setLocationName('New Delhi, India');
+      setLocationName('Navi Mumbai, Maharashtra');
       fetchData(defaultLat, defaultLon);
       return () => {
         clearInterval(interval);
