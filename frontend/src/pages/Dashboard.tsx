@@ -69,7 +69,7 @@ export function Dashboard() {
     logEvent('aqi_fetch', { aqi: aqiValue, city, lat, lon }, '/dashboard');
   };
 
-  const fetchData = async (lat: number, lon: number) => {
+  const fetchData = async (lat: number, lon: number, skipNameUpdate = false) => {
     setCoords({ lat, lon });
     // Throttle: don't re-fetch if last fetch was <30 seconds ago (prevents
     // watchPosition firing repeatedly on small GPS jitter)
@@ -157,11 +157,7 @@ export function Dashboard() {
         googleRaw: googleJson, // keep full response for report generation
       });
 
-      // ── Reverse geocode for location name ──
-      // Only run if we don't already have a reliable name from the profile or GPS.
-      // This prevents BigDataCloud from overwriting "Navi Mumbai" with "Thane"
-      // or another imprecise result on every AQI refresh.
-      let resolvedCity = locationNameRef.current.replace(/, .*$/, '').trim(); // default: current city
+      let resolvedCity = locationNameRef.current.replace(/, .*$/, '').trim();
       try {
         const geoRes = await fetch(
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
@@ -170,9 +166,9 @@ export function Dashboard() {
         const city = geoJson.city || geoJson.locality || '';
         const state = geoJson.principalSubdivision || '';
         resolvedCity = city || resolvedCity;
-        // Only update displayed name if location came from IP (unreliable source)
-        // Profile/GPS/default names are already correct and shouldn't be overwritten.
-        if ((locationSource === 'detecting' || locationSource === 'ip_fallback') && (city || state)) {
+        // Only overwrite the displayed location name when we don't already have
+        // a correct one from the user's profile, GPS, or Navi Mumbai default.
+        if (!skipNameUpdate && (city || state)) {
           const name = `${city}${city && state ? ', ' : ''}${state}`;
           setLocationName(name);
           locationNameRef.current = name;
@@ -341,7 +337,7 @@ export function Dashboard() {
               locationNameRef.current = profile.city;
               setGeoStatus('active');
               setLocationSource('profile');
-              await fetchData(lat, lon);
+              await fetchData(lat, lon, true); // name already set — don't overwrite
               profileCityLoaded = true;
             }
           }
@@ -356,7 +352,7 @@ export function Dashboard() {
         locationNameRef.current = NAVI_MUMBAI.name;
         setGeoStatus('active');
         setLocationSource('default');
-        await fetchData(NAVI_MUMBAI.lat, NAVI_MUMBAI.lon);
+        await fetchData(NAVI_MUMBAI.lat, NAVI_MUMBAI.lon, true); // name already set — don't overwrite
       }
 
       // ── STEP 2: Silently try GPS for higher precision ─────────────────────
@@ -386,7 +382,7 @@ export function Dashboard() {
               } catch { /* keep profile city name */ }
               setGeoStatus('active');
               setLocationSource('gps');
-              fetchData(latitude, longitude);
+              fetchData(latitude, longitude, true); // name already set from BigDataCloud above
             }
           },
           () => { /* GPS denied — already showing profile/default city */ },
