@@ -158,19 +158,21 @@ export function Dashboard() {
       });
 
       // ── Reverse geocode for location name ──
-      // BigDataCloud handles Indian metro cities (Navi Mumbai, etc.) correctly
-      // where Nominatim returns only state-level results. Free, no API key needed.
-      let resolvedCity = '';
+      // Only run if we don't already have a reliable name from the profile or GPS.
+      // This prevents BigDataCloud from overwriting "Navi Mumbai" with "Thane"
+      // or another imprecise result on every AQI refresh.
+      let resolvedCity = locationNameRef.current.replace(/, .*$/, '').trim(); // default: current city
       try {
         const geoRes = await fetch(
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
         );
         const geoJson = await geoRes.json();
-        // city = district-level city, locality = more specific place
         const city = geoJson.city || geoJson.locality || '';
         const state = geoJson.principalSubdivision || '';
-        resolvedCity = city;
-        if (city || state) {
+        resolvedCity = city || resolvedCity;
+        // Only update displayed name if location came from IP (unreliable source)
+        // Profile/GPS/default names are already correct and shouldn't be overwritten.
+        if ((locationSource === 'detecting' || locationSource === 'ip_fallback') && (city || state)) {
           const name = `${city}${city && state ? ', ' : ''}${state}`;
           setLocationName(name);
           locationNameRef.current = name;
