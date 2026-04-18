@@ -229,10 +229,12 @@ function MapClickEvents({ setSelectedCity }: { setSelectedCity: (city: any) => v
         if (json.current && json.current.us_aqi !== undefined) {
           let name = `Location (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
           try {
-            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const geoRes = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+            );
             const geoJson = await geoRes.json();
-            if (geoJson.address) {
-              name = geoJson.address.city || geoJson.address.town || geoJson.address.village || geoJson.address.county || name;
+            if (geoJson.city || geoJson.locality) {
+              name = geoJson.city || geoJson.locality;
             }
           } catch (e) { /* ignore */ }
           setSelectedCity({
@@ -815,6 +817,56 @@ export function MapView() {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const [showHeatmap, setShowHeatmap] = useState(true);
+  const [geoLocating, setGeoLocating] = useState(false);
+
+  // Fly map to user's current GPS location and fetch AQI
+  const handleUseMyLocation = () => {
+    if (!navigator.geolocation) return;
+    setGeoLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setFlyTarget({ lat, lon: lng });
+        try {
+          const res = await fetch(
+            `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&current=us_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone`
+          );
+          const json = await res.json();
+          if (json.current && json.current.us_aqi !== undefined) {
+            let name = `My Location (${lat.toFixed(2)}°N, ${lng.toFixed(2)}°E)`;
+            try {
+              const geoRes = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+              );
+              const geoJson = await geoRes.json();
+              const city = geoJson.city || geoJson.locality || '';
+              const state = geoJson.principalSubdivision || '';
+              if (city) name = `${city}${state ? ', ' + state : ''}`;
+            } catch { /* ignore reverse geocoding error */ }
+            setSelectedCity({
+              aqi: json.current.us_aqi,
+              name,
+              lat,
+              lon: lng,
+              details: {
+                pm10: json.current.pm10,
+                pm2_5: json.current.pm2_5,
+                co: json.current.carbon_monoxide,
+                no2: json.current.nitrogen_dioxide,
+                so2: json.current.sulphur_dioxide,
+                o3: json.current.ozone,
+              },
+              chemicals: [],
+              isMyLocation: true,
+            });
+          }
+        } catch { /* ignore fetch error */ }
+        setGeoLocating(false);
+      },
+      () => setGeoLocating(false), // denied or error
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  };
 
   // Log page view on mount
   useEffect(() => { logEvent('map_view', {}, '/map'); }, []);
@@ -1414,6 +1466,26 @@ ${riskMap[level]}
           </AnimatePresence>
         </div>
 
+        {/* My Location button */}
+        <button
+          onClick={handleUseMyLocation}
+          disabled={geoLocating}
+          className={`p-3 backdrop-blur-xl border rounded-2xl transition-all flex items-center justify-center pointer-events-auto shrink-0 gap-2 px-4 ${
+            geoLocating
+              ? 'bg-[#00D4AA]/10 border-[#00D4AA]/40 text-[#00D4AA] cursor-wait'
+              : 'bg-surface/90 border-stroke hover:bg-surface hover:border-[#00D4AA]/40 text-text-primary'
+          }`}
+          title="Use My Location"
+        >
+          {geoLocating
+            ? <Loader2 className="w-5 h-5 text-[#00D4AA] animate-spin" />
+            : <MapPin className="w-5 h-5 text-[#00D4AA]" />
+          }
+          <span className="text-sm font-medium hidden sm:block">
+            {geoLocating ? 'Locating…' : 'My Location'}
+          </span>
+        </button>
+
         {/* Explore Any City button */}
         <button
           onClick={() => setShowSpoofPanel(v => !v)}
@@ -1696,6 +1768,12 @@ ${riskMap[level]}
               <div className="flex items-center gap-2 mb-3 bg-[#00D4AA]/10 border border-[#00D4AA]/20 rounded-xl px-3 py-2">
                 <Navigation className="w-4 h-4 text-[#00D4AA]" />
                 <span className="text-xs text-[#00D4AA] font-medium">Virtual Location</span>
+              </div>
+            )}
+            {selectedCity.isMyLocation && (
+              <div className="flex items-center gap-2 mb-3 bg-[#60A5FA]/10 border border-[#60A5FA]/20 rounded-xl px-3 py-2">
+                <MapPin className="w-4 h-4 text-[#60A5FA] animate-pulse" />
+                <span className="text-xs text-[#60A5FA] font-medium">Your Current Location</span>
               </div>
             )}
 

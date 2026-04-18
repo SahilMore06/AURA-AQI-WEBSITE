@@ -23,6 +23,10 @@ export function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [geoStatus, setGeoStatus] = useState<'detecting' | 'active' | 'denied' | 'unavailable'>('detecting');
   const [nextRefreshIn, setNextRefreshIn] = useState(120);
+  // Track whether first data load has completed so subsequent GPS updates
+  // don't trigger the full-page loading spinner.
+  const hasInitialLoad = useRef(false);
+  const lastFetchTime = useRef(0);
 
   const GOOGLE_AQ_KEY = (import.meta as any).env?.VITE_GOOGLE_AQ_API_KEY;
   const ML_API_URL = (import.meta as any).env?.VITE_ML_API_URL || 'http://localhost:5001';
@@ -65,8 +69,15 @@ export function Dashboard() {
 
   const fetchData = async (lat: number, lon: number) => {
     setCoords({ lat, lon });
+    // Throttle: don't re-fetch if last fetch was <30 seconds ago (prevents
+    // watchPosition firing repeatedly on small GPS jitter)
+    const now = Date.now();
+    if (hasInitialLoad.current && now - lastFetchTime.current < 30_000) return;
+    lastFetchTime.current = now;
     try {
-      setLoading(true);
+      // Only show full loading spinner on the very first fetch
+      if (!hasInitialLoad.current) setLoading(true);
+      else setIsRefreshing(true);
       setError(null);
 
       // ── Primary: Google Air Quality API (accurate, real-time) ──
@@ -145,19 +156,22 @@ export function Dashboard() {
       });
 
       // ── Reverse geocode for location name ──
+      // BigDataCloud handles Indian metro cities (Navi Mumbai, etc.) correctly
+      // where Nominatim returns only state-level results. Free, no API key needed.
       let resolvedCity = '';
       try {
-        const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const geoRes = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+        );
         const geoJson = await geoRes.json();
-        if (geoJson.address) {
-          const city = geoJson.address.city || geoJson.address.town || geoJson.address.village || geoJson.address.county || '';
-          const state = geoJson.address.state || '';
-          resolvedCity = city;
-          if (city || state) {
-            const name = `${city}${city && state ? ', ' : ''}${state}`;
-            setLocationName(name);
-            locationNameRef.current = name;
-          }
+        // city = district-level city, locality = more specific place
+        const city = geoJson.city || geoJson.locality || '';
+        const state = geoJson.principalSubdivision || '';
+        resolvedCity = city;
+        if (city || state) {
+          const name = `${city}${city && state ? ', ' : ''}${state}`;
+          setLocationName(name);
+          locationNameRef.current = name;
         }
       } catch (e) {
         console.error('Reverse geocoding failed', e);
@@ -181,6 +195,7 @@ export function Dashboard() {
       setError('Failed to fetch air quality data');
       console.error(err);
     } finally {
+      hasInitialLoad.current = true;
       setLoading(false);
       setIsRefreshing(false);
       setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -286,9 +301,10 @@ export function Dashboard() {
       }
     }, REFRESH_SECS * 1000);
 
-    // Resume immediately when the tab becomes visible again
+    // Resume immediately when the tab becomes visible again,
+    // but only if it's been at least 60 seconds since the last fetch.
     const handleVisibility = () => {
-      if (!document.hidden) {
+      if (!document.hidden && Date.now() - lastFetchTime.current > 60_000) {
         fetchData(latestCoords.lat, latestCoords.lon);
         setNextRefreshIn(REFRESH_SECS);
       }
@@ -462,29 +478,46 @@ export function Dashboard() {
           animate={{ y: 0, opacity: 1 }}
           className="flex items-center justify-between"
         >
-          <div className="flex items-center gap-3 bg-surface border border-stroke rounded-full px-4 py-2 backdrop-blur-md">
-            <MapPin className={`w-4 h-4 ${
-              geoStatus === 'active' ? 'text-[#00D4AA]' :
+          {/* Location pill — click to re-detect GPS */}
+          <button
+            onClick={handleUseMyLocation}
+            className="flex items-center gap-3 bg-surface border border-stroke rounded-full px-4 py-2 backdrop-blur-md hover:border-[#00D4AA]/50 transition-colors group"
+            title="Click to update your location"
+          >
+            <MapPin className={`w-4 h-4 transition-colors ${
+              geoStatus === 'active'    ? 'text-[#00D4AA]' :
               geoStatus === 'detecting' ? 'text-yellow-400 animate-pulse' :
-              geoStatus === 'denied' ? 'text-[#FF5252]' : 'text-muted'
-            }`} />
+              geoStatus === 'denied'    ? 'text-[#FF5252]' : 'text-muted'
+            } group-hover:text-[#00D4AA]`} />
             <span className="font-medium text-sm">{locationName}</span>
             {geoStatus === 'active' && (
               <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] animate-pulse" title="Using your live location" />
             )}
-          </div>
+            {geoStatus === 'detecting' && (
+              <Loader2 className="w-3 h-3 text-yellow-400 animate-spin" />
+            )}
+          </button>
 
           <div className="flex items-center gap-4">
-            {(geoStatus === 'denied' || geoStatus === 'unavailable') && (
-              <button
-                onClick={handleUseMyLocation}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-[#00D4AA]/50 rounded-full text-xs text-[#00D4AA] hover:bg-[#00D4AA]/10 transition-colors"
-              >
-                <Navigation className="w-3.5 h-3.5" />
-                Use My Location
-              </button>
-            )}
-            <button 
+            {/* Always-visible Update Location button */}
+            <button
+              onClick={handleUseMyLocation}
+              className={`flex items-center gap-1.5 px-3 py-1.5 bg-surface border rounded-full text-xs transition-colors ${
+                geoStatus === 'denied'
+                  ? 'border-[#FF5252]/50 text-[#FF5252] hover:bg-[#FF5252]/10'
+                  : geoStatus === 'detecting'
+                  ? 'border-yellow-400/40 text-yellow-400 cursor-wait'
+                  : 'border-[#00D4AA]/40 text-[#00D4AA] hover:bg-[#00D4AA]/10'
+              }`}
+              disabled={geoStatus === 'detecting'}
+            >
+              {geoStatus === 'detecting'
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                : <Navigation className="w-3.5 h-3.5" />
+              }
+              {geoStatus === 'detecting' ? 'Detecting…' : 'Use My Location'}
+            </button>
+            <button
               onClick={alertActive ? handleAlertClick : undefined}
               title={alertActive ? "Hazardous AQI! Download IEEE Alert Report" : "No active alerts"}
               className={`relative p-2 rounded-full bg-surface border transition-colors ${alertActive ? 'border-[#FF5252] hover:bg-[#FF5252]/10 cursor-pointer animate-pulse shadow-[0_0_15px_rgba(255,82,82,0.5)]' : 'border-stroke hover:bg-stroke/50 cursor-default'}`}
@@ -498,24 +531,24 @@ export function Dashboard() {
           </div>
         </motion.header>
 
-        {/* Geo-denied banner */}
-        {geoStatus === 'denied' && (
+        {/* Geo-denied / IP-fallback banner */}
+        {(geoStatus === 'denied' || (geoStatus === 'active' && locationName.includes('Taluka'))) && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 bg-[#FF5252]/10 border border-[#FF5252]/30 rounded-2xl px-4 py-3 text-sm"
+            className="flex items-center gap-3 bg-[#FF9E40]/10 border border-[#FF9E40]/30 rounded-2xl px-4 py-3 text-sm"
           >
-            <MapPin className="w-4 h-4 text-[#FF5252] shrink-0" />
+            <MapPin className="w-4 h-4 text-[#FF9E40] shrink-0" />
             <span className="text-text-primary/80 flex-1">
-              <strong className="text-[#FF5252]">Location access blocked.</strong>{' '}
-              Click <strong>"Use My Location"</strong> above, then allow location in your browser's permission popup — or enable it in your browser's site settings for <code className="text-xs bg-stroke/40 px-1 rounded">localhost:3000</code>.
+              <strong className="text-[#FF9E40]">Location may be inaccurate.</strong>{' '}
+              Click <strong>"Use My Location"</strong> in the header and allow location access in your browser to get your real AQI.
             </span>
             <button
               onClick={handleUseMyLocation}
               className="shrink-0 px-3 py-1.5 bg-[#00D4AA]/10 border border-[#00D4AA]/40 rounded-full text-xs text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-colors flex items-center gap-1.5"
             >
               <Navigation className="w-3 h-3" />
-              Retry
+              Fix Location
             </button>
           </motion.div>
         )}

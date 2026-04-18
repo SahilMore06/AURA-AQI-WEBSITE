@@ -40,15 +40,10 @@ export function Registration() {
       async (pos) => {
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`
           );
           const data = await res.json();
-          const detectedCity =
-            data.address?.city ||
-            data.address?.town ||
-            data.address?.village ||
-            data.address?.county ||
-            '';
+          const detectedCity = data.city || data.locality || '';
           if (detectedCity) {
             setCity(detectedCity);
             setCitySearch(detectedCity);
