@@ -23,6 +23,8 @@ export function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [geoStatus, setGeoStatus] = useState<'detecting' | 'active' | 'denied' | 'unavailable'>('detecting');
   const [nextRefreshIn, setNextRefreshIn] = useState(120);
+  // 'profile' = from Supabase profile, 'gps' = GPS, 'default' = hardcoded Navi Mumbai, 'ip_fallback' = IP geolocation
+  const [locationSource, setLocationSource] = useState<'detecting' | 'profile' | 'gps' | 'default' | 'ip_fallback'>('detecting');
   // Track whether first data load has completed so subsequent GPS updates
   // don't trigger the full-page loading spinner.
   const hasInitialLoad = useRef(false);
@@ -240,6 +242,7 @@ export function Dashboard() {
       const d = await r.json();
       if (d.success && d.latitude && d.longitude) {
         setGeoStatus('active');
+        setLocationSource('ip_fallback'); // ← IP location, show warning banner
         if (d.city) {
           const name = d.city + (d.region ? `, ${d.region}` : '');
           setLocationName(name);
@@ -255,13 +258,16 @@ export function Dashboard() {
       const d = await r.json();
       if (d.latitude && d.longitude) {
         setGeoStatus('active');
+        setLocationSource('ip_fallback'); // ← IP location, show warning banner
         fetchData(d.latitude, d.longitude);
         return;
       }
     } catch {}
-    // Hard fallback: Navi Mumbai
-    setGeoStatus('denied');
+    // Hard fallback: Navi Mumbai — reliable, no banner needed
+    setGeoStatus('active');
+    setLocationSource('default');
     setLocationName('Navi Mumbai, Maharashtra');
+    locationNameRef.current = 'Navi Mumbai, Maharashtra';
     fetchData(19.0330, 73.0297);
   };
 
@@ -332,6 +338,7 @@ export function Dashboard() {
               setLocationName(profile.city);
               locationNameRef.current = profile.city;
               setGeoStatus('active');
+              setLocationSource('profile');
               await fetchData(lat, lon);
               profileCityLoaded = true;
             }
@@ -346,6 +353,7 @@ export function Dashboard() {
         setLocationName(NAVI_MUMBAI.name);
         locationNameRef.current = NAVI_MUMBAI.name;
         setGeoStatus('active');
+        setLocationSource('default');
         await fetchData(NAVI_MUMBAI.lat, NAVI_MUMBAI.lon);
       }
 
@@ -375,6 +383,7 @@ export function Dashboard() {
                 }
               } catch { /* keep profile city name */ }
               setGeoStatus('active');
+              setLocationSource('gps');
               fetchData(latitude, longitude);
             }
           },
@@ -575,8 +584,8 @@ export function Dashboard() {
           </div>
         </motion.header>
 
-        {/* Geo-denied / IP-fallback banner */}
-        {(geoStatus === 'denied' || (geoStatus === 'active' && locationName.includes('Taluka'))) && (
+        {/* Warning banner — only shown when using unreliable IP-based location */}
+        {locationSource === 'ip_fallback' && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
