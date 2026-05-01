@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 import { Landing } from './pages/Landing';
 import { Auth } from './pages/Auth';
@@ -16,6 +16,20 @@ import { Registration } from './pages/Registration';
 import { IosDockBar } from './components/dock/IosDockBar';
 import { supabase } from './lib/supabase';
 import { useAuthStore } from './store/authStore';
+
+// Capacitor plugins — gracefully no-op in browser
+let CapApp: any = null;
+let SplashScreen: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cap = require('@capacitor/app');
+  CapApp = cap.App;
+} catch (_) { /* running in browser */ }
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const sp = require('@capacitor/splash-screen');
+  SplashScreen = sp.SplashScreen;
+} catch (_) { /* running in browser */ }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, isLoading, isAdminMock } = useAuthStore();
@@ -64,6 +78,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setSession, setUser, setLoading, isAdminMock } = useAuthStore();
 
   React.useEffect(() => {
+    // Hide the native splash screen once React has mounted
+    SplashScreen?.hide();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!isAdminMock) {
         setSession(session);
@@ -88,10 +105,37 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Handles the Android hardware back button.
+ * On the root pages (landing/auth) it exits the app.
+ * On inner pages, it navigates back in history.
+ */
+function AndroidBackHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (!CapApp) return;
+    const rootPaths = ['/', '/auth'];
+    const handler = CapApp.addListener('backButton', () => {
+      if (rootPaths.includes(location.pathname)) {
+        // Exit app on root screens
+        CapApp.exitApp();
+      } else {
+        navigate(-1);
+      }
+    });
+    return () => { handler.then((h: any) => h.remove()); };
+  }, [navigate, location.pathname]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <Router>
+        <AndroidBackHandler />
         <AnimatedRoutes />
       </Router>
     </AuthProvider>

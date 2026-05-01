@@ -98,6 +98,11 @@
   body {
     @apply font-body antialiased bg-bg text-text-primary;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Android safe area insets — respects notch and nav bar on Android */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 

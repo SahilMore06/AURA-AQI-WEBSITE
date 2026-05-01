@@ -11,6 +11,12 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
+    "@capacitor/splash-screen": "^8.0.1",
     "@supabase/supabase-js": "^2.101.1",
     "@types/topojson-client": "^3.1.5",
     "clsx": "^2.1.1",
@@ -29,6 +35,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@google/genai": "^1.29.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/vite": "^4.1.14",

@@ -27,6 +27,8 @@ export function Dashboard() {
   const [nextRefreshIn, setNextRefreshIn] = useState(120);
   // 'profile' = from Supabase profile, 'gps' = GPS, 'default' = hardcoded Navi Mumbai, 'ip_fallback' = IP geolocation
   const [locationSource, setLocationSource] = useState<'detecting' | 'profile' | 'gps' | 'default' | 'ip_fallback'>('detecting');
+  // Only true when the *current active* location came from IP (imprecise) — cleared once GPS/profile takes over
+  const [showLocationWarning, setShowLocationWarning] = useState(false);
   // Track whether first data load has completed so subsequent GPS updates
   // don't trigger the full-page loading spinner.
   const hasInitialLoad = useRef(false);
@@ -245,31 +247,34 @@ export function Dashboard() {
     setGeoStatus('detecting');
     setLocationName('Detecting location…');
     if (!navigator.geolocation) {
-      // No geolocation API — try IP fallback
-      tryIpFallback();
+      // No geolocation API — try IP fallback; don't show banner (user explicitly clicked)
+      tryIpFallback(false);
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setGeoStatus('active');
+        setLocationSource('gps');
+        setShowLocationWarning(false); // GPS is precise — clear any warning
         fetchData(position.coords.latitude, position.coords.longitude);
       },
       () => {
-        // GPS denied — try IP-based detection
-        tryIpFallback();
+        // GPS denied — try IP-based detection; don't show banner (user explicitly clicked)
+        tryIpFallback(false);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   };
 
-  const tryIpFallback = async () => {
+  const tryIpFallback = async (showWarning = true) => {
     // Primary: ipwho.is — free, HTTPS, ~56ms, no rate-limit issues
     try {
       const r = await fetch('https://ipwho.is/');
       const d = await r.json();
       if (d.success && d.latitude && d.longitude) {
         setGeoStatus('active');
-        setLocationSource('ip_fallback'); // ← IP location, show warning banner
+        setLocationSource('ip_fallback');
+        if (showWarning) setShowLocationWarning(true); // ← only show banner on auto-detect path
         if (d.city) {
           const name = d.city + (d.region ? `, ${d.region}` : '');
           setLocationName(name);
@@ -285,7 +290,8 @@ export function Dashboard() {
       const d = await r.json();
       if (d.latitude && d.longitude) {
         setGeoStatus('active');
-        setLocationSource('ip_fallback'); // ← IP location, show warning banner
+        setLocationSource('ip_fallback');
+        if (showWarning) setShowLocationWarning(true);
         fetchData(d.latitude, d.longitude);
         return;
       }
@@ -293,6 +299,7 @@ export function Dashboard() {
     // Hard fallback: Navi Mumbai — reliable, no banner needed
     setGeoStatus('active');
     setLocationSource('default');
+    setShowLocationWarning(false);
     setLocationName('Navi Mumbai, Maharashtra');
     locationNameRef.current = 'Navi Mumbai, Maharashtra';
     fetchData(19.0330, 73.0297);
@@ -366,6 +373,7 @@ export function Dashboard() {
               locationNameRef.current = profile.city;
               setGeoStatus('active');
               setLocationSource('profile');
+              setShowLocationWarning(false); // Profile city is reliable — no warning needed
               await fetchData(lat, lon, true); // name already set — don't overwrite
               profileCityLoaded = true;
             }
@@ -381,6 +389,7 @@ export function Dashboard() {
         locationNameRef.current = NAVI_MUMBAI.name;
         setGeoStatus('active');
         setLocationSource('default');
+        setShowLocationWarning(false); // Default city is fine — no warning
         await fetchData(NAVI_MUMBAI.lat, NAVI_MUMBAI.lon, true); // name already set — don't overwrite
       }
 
@@ -411,6 +420,7 @@ export function Dashboard() {
               } catch { /* keep profile city name */ }
               setGeoStatus('active');
               setLocationSource('gps');
+              setShowLocationWarning(false); // GPS upgraded location — no warning
               fetchData(latitude, longitude, true); // name already set from BigDataCloud above
             }
           },
@@ -611,8 +621,8 @@ export function Dashboard() {
           </div>
         </motion.header>
 
-        {/* Warning banner — only shown when using unreliable IP-based location */}
-        {locationSource === 'ip_fallback' && (
+        {/* Warning banner — only shown when IP-based location is active and not overridden by GPS/profile */}
+        {showLocationWarning && locationSource === 'ip_fallback' && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
